@@ -12,37 +12,47 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import cn.blacklighting.sevice.DBService;
 import cn.blacklighting.sevice.FileWriteService;
 import cn.blacklighting.sevice.HtmlExtracterService;
 import cn.blacklighting.sevice.PageDownService;
 import com.alibaba.fastjson.JSONObject;
+import org.hibernate.*;
 
 /**
  * @author Yajun Liu
  * @modify time 2016/3/31
  */
 public class Main {
+
+
+
 	public static int THRED_POOL_SIZE = 0;
 	static HtmlExtracterService extracter = null;
 	static LinkedBlockingQueue<Entry<String, String>> htmlQueue = null;
 	public static boolean needProxy=true;
 	public static String fileEncoding="utf8";
+
+
 	/**
 	 * @param args
 	 * @throws FileNotFoundException
 	 */
 	public static void main(final String[] args) throws FileNotFoundException {
+
+		DBService db= DBService.getInstance();
+		Session session=db.getSession();
+		Transaction tx=session.beginTransaction();
+
+		UrlseedEntity seed=new UrlseedEntity();
+
+
 		if (args.length < 3) {
 			System.out
 					.println("3 arg needed : urlFileNname htmlOutputFileName,threadPoolSize [templateFile(null for not needed),proxy(1 or 0)]");
 			return;
 		}
-//		RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
-//		String pid = runtimeMXBean.getName().split("@")[0];
-//
-//		System.out.println("\nSpider start!\nTo stop,run : kill -9 " + pid
-//				+ "\nSpider will run in slience ,to see data run : tail -f "
-//				+ args[1] + "\n");
+
 		FileWriteService.setOutPutFile(args[1]);
 		THRED_POOL_SIZE = Integer.parseInt(args[2]);
 		System.setProperty("org.apache.commons.logging.Log",
