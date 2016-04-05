@@ -65,7 +65,7 @@ CREATE TABLE `url` (
   `weight` int(11) DEFAULT '0',
   `retry_time` int(11) DEFAULT '0',
   `deepth` int(11) DEFAULT '0',
-  `domain` int(11) DEFAULT NULL,
+  `domain` VARCHAR(256) DEFAULT NULL,
   `is_seed` tinyint(1) DEFAULT NULL,
   `max_deepth` int(11) DEFAULT '3'
 )  DEFAULT CHARSET=utf8;

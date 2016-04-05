@@ -16,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author Yajun Liu
  *
  */
-public class FileWriteService {
+public class HtmlToFileWriterService {
 
 	public static String OUTPUT_FILE_NAME = null;
 	private static OutputStream out = null;

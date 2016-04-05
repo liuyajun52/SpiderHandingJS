@@ -107,7 +107,7 @@ public class PageDownService {
 				}
 				stopThead = true;
 				threadPool.shutdown();
-				FileWriteService.closeOut();
+				HtmlToFileWriterService.closeOut();
 				if(Main.needProxy){
 					ProxyService.getInstance().stopGetProxyService();
 				}

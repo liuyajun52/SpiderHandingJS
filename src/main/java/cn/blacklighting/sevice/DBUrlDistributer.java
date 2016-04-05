@@ -13,9 +13,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**url 分发器，使用MYSQL作为数据源
  * Created by zybang on 2016/4/1.
  */
-public class DBUrlDistributer implements UrlDistributionInterface {
+public class DBUrlDistributer implements UrlDistributer {
 
-    private static org.apache.log4j.Logger logger= Logger.getLogger(DBService.class);
+    private static org.apache.log4j.Logger logger= Logger.getLogger(DBUrlDistributer.class);
 
     private DBService db;
     private final LinkedBlockingQueue<UrlEntity> urlQueue;
@@ -65,7 +65,7 @@ public class DBUrlDistributer implements UrlDistributionInterface {
 
                 urlQueue.put(sn);
                 sn.setStatus((byte)1);
-                s.save(sn);
+                s.update(sn);
                 seedSum++;
             }
             s.getTransaction().commit();

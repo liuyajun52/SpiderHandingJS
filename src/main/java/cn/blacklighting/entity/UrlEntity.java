@@ -16,7 +16,7 @@ public class UrlEntity {
     private Integer weight;
     private Integer retryTime;
     private Integer deepth;
-    private Integer domain;
+    private String domain;
     private Byte isSeed;
     private Integer maxDeepth;
 
@@ -102,11 +102,11 @@ public class UrlEntity {
 
     @Basic
     @Column(name = "domain")
-    public Integer getDomain() {
+    public String getDomain() {
         return domain;
     }
 
-    public void setDomain(Integer domain) {
+    public void setDomain(String domain) {
         this.domain = domain;
     }
 
