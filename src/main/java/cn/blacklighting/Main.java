@@ -3,29 +3,27 @@
  */
 package cn.blacklighting;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import cn.blacklighting.sevice.DBService;
 import cn.blacklighting.sevice.FileWriteService;
 import cn.blacklighting.sevice.HtmlExtracterService;
 import cn.blacklighting.sevice.PageDownService;
 import com.alibaba.fastjson.JSONObject;
-import org.hibernate.*;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.AbstractMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author Yajun Liu
- * @modify time 2016/3/31
  */
 public class Main {
-
-
 
 	public static int THRED_POOL_SIZE = 0;
 	static HtmlExtracterService extracter = null;
@@ -43,8 +41,6 @@ public class Main {
 		DBService db= DBService.getInstance();
 		Session session=db.getSession();
 		Transaction tx=session.beginTransaction();
-
-		UrlseedEntity seed=new UrlseedEntity();
 
 
 		if (args.length < 3) {
@@ -102,7 +98,7 @@ public class Main {
 						if (args.length < 4||args[3].equals("null")) {
 							;
 						} else {
-							SimpleEntry<String, String> urlHtmlPair = new SimpleEntry<String, String>(
+							AbstractMap.SimpleEntry<String, String> urlHtmlPair = new AbstractMap.SimpleEntry<String, String>(
 									url, new String(html));
 							try {
 								htmlQueue.put(urlHtmlPair);

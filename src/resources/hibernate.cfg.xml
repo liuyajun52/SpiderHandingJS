@@ -6,8 +6,6 @@
     <session-factory>
         <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
         <property name="connection.url">jdbc:mysql://localhost:3306/spider</property>
-        <property name="connection.username">root</property>
-        <property name="connection.password">1121Mysql</property>
         <property name="hibernate.connection.pool.size">20 </property>
         <property name="hibernate.show_sql">true </property>
         <property name="jdbc.fetch_size">50 </property>

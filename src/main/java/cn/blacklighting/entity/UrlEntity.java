@@ -3,7 +3,7 @@ package cn.blacklighting.entity;
 import javax.persistence.*;
 
 /**
- * Created by zybang on 2016/4/1.
+ * Created by Yajun Liu on 2016/4/4 0004.
  */
 @Entity
 @Table(name = "url", schema = "spider", catalog = "")
@@ -15,6 +15,10 @@ public class UrlEntity {
     private Integer pageId;
     private Integer weight;
     private Integer retryTime;
+    private Integer deepth;
+    private Integer domain;
+    private Byte isSeed;
+    private Integer maxDeepth;
 
     @Id
     @Column(name = "id")
@@ -86,6 +90,46 @@ public class UrlEntity {
         this.retryTime = retryTime;
     }
 
+    @Basic
+    @Column(name = "deepth")
+    public Integer getDeepth() {
+        return deepth;
+    }
+
+    public void setDeepth(Integer deepth) {
+        this.deepth = deepth;
+    }
+
+    @Basic
+    @Column(name = "domain")
+    public Integer getDomain() {
+        return domain;
+    }
+
+    public void setDomain(Integer domain) {
+        this.domain = domain;
+    }
+
+    @Basic
+    @Column(name = "is_seed")
+    public Byte getIsSeed() {
+        return isSeed;
+    }
+
+    public void setIsSeed(Byte isSeed) {
+        this.isSeed = isSeed;
+    }
+
+    @Basic
+    @Column(name = "max_deepth")
+    public Integer getMaxDeepth() {
+        return maxDeepth;
+    }
+
+    public void setMaxDeepth(Integer maxDeepth) {
+        this.maxDeepth = maxDeepth;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -100,6 +144,10 @@ public class UrlEntity {
         if (pageId != null ? !pageId.equals(urlEntity.pageId) : urlEntity.pageId != null) return false;
         if (weight != null ? !weight.equals(urlEntity.weight) : urlEntity.weight != null) return false;
         if (retryTime != null ? !retryTime.equals(urlEntity.retryTime) : urlEntity.retryTime != null) return false;
+        if (deepth != null ? !deepth.equals(urlEntity.deepth) : urlEntity.deepth != null) return false;
+        if (domain != null ? !domain.equals(urlEntity.domain) : urlEntity.domain != null) return false;
+        if (isSeed != null ? !isSeed.equals(urlEntity.isSeed) : urlEntity.isSeed != null) return false;
+        if (maxDeepth != null ? !maxDeepth.equals(urlEntity.maxDeepth) : urlEntity.maxDeepth != null) return false;
 
         return true;
     }
@@ -113,6 +161,10 @@ public class UrlEntity {
         result = 31 * result + (pageId != null ? pageId.hashCode() : 0);
         result = 31 * result + (weight != null ? weight.hashCode() : 0);
         result = 31 * result + (retryTime != null ? retryTime.hashCode() : 0);
+        result = 31 * result + (deepth != null ? deepth.hashCode() : 0);
+        result = 31 * result + (domain != null ? domain.hashCode() : 0);
+        result = 31 * result + (isSeed != null ? isSeed.hashCode() : 0);
+        result = 31 * result + (maxDeepth != null ? maxDeepth.hashCode() : 0);
         return result;
     }
 }

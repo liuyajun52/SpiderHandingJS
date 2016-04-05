@@ -32,7 +32,7 @@ CREATE TABLE `link` (
   `to_url` varchar(512) NOT NULL,
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -48,7 +48,7 @@ CREATE TABLE `page` (
   `doc_type` varchar(32) DEFAULT 'HTML',
   `update_time` int(11) DEFAULT NULL,
   `JS_handled` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -68,7 +68,7 @@ CREATE TABLE `url` (
   `domain` int(11) DEFAULT NULL,
   `is_seed` tinyint(1) DEFAULT NULL,
   `max_deepth` int(11) DEFAULT '3'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+)  DEFAULT CHARSET=utf8;
 
 --
 -- Indexes for dumped tables
