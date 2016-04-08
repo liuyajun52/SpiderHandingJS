@@ -17,7 +17,7 @@ public class PageEntity {
     private Byte jsHandled;
 
     @Id
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     public int getId() {
         return id;
     }
@@ -27,7 +27,7 @@ public class PageEntity {
     }
 
     @Basic
-    @Column(name = "url_id")
+    @Column(name = "url_id", nullable = true)
     public Integer getUrlId() {
         return urlId;
     }
@@ -37,7 +37,7 @@ public class PageEntity {
     }
 
     @Basic
-    @Column(name = "page_path")
+    @Column(name = "page_path", nullable = true, length = 256)
     public String getPagePath() {
         return pagePath;
     }
@@ -47,7 +47,7 @@ public class PageEntity {
     }
 
     @Basic
-    @Column(name = "include_links_nu")
+    @Column(name = "include_links_nu", nullable = true)
     public Integer getIncludeLinksNu() {
         return includeLinksNu;
     }
@@ -57,7 +57,7 @@ public class PageEntity {
     }
 
     @Basic
-    @Column(name = "doc_type")
+    @Column(name = "doc_type", nullable = true, length = 32)
     public String getDocType() {
         return docType;
     }
@@ -67,7 +67,7 @@ public class PageEntity {
     }
 
     @Basic
-    @Column(name = "update_time")
+    @Column(name = "update_time", nullable = true)
     public Integer getUpdateTime() {
         return updateTime;
     }
@@ -77,7 +77,7 @@ public class PageEntity {
     }
 
     @Basic
-    @Column(name = "JS_handled")
+    @Column(name = "JS_handled", nullable = true)
     public Byte getJsHandled() {
         return jsHandled;
     }

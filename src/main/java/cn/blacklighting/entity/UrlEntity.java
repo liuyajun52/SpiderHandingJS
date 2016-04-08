@@ -6,11 +6,17 @@ import javax.persistence.*;
  * Created by Yajun Liu on 2016/4/4 0004.
  */
 @Entity
-@Table(name = "url", schema = "spider", catalog = "")
+@Table(name = "url", schema = "spider")
 public class UrlEntity {
+
+    public static final int STATUS_NEW=0;
+    public static final int STATUS_IN_QUEUE=1;
+    public static final int STATUS_CRAWED=2;
+    public static final int STATUS_FAILED=2;
+
     private int id;
     private String url;
-    private Byte status;
+    private Integer status;
     private Byte needHandJs;
     private Integer pageId;
     private Integer weight;
@@ -20,8 +26,9 @@ public class UrlEntity {
     private Byte isSeed;
     private Integer maxDeepth;
 
+
     @Id
-    @Column(name = "id")
+    @Column(name = "id",nullable = false)
     public int getId() {
         return id;
     }
@@ -31,7 +38,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "url")
+    @Column(name = "url", nullable = true, length = 256)
     public String getUrl() {
         return url;
     }
@@ -41,17 +48,17 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "status")
-    public Byte getStatus() {
+    @Column(name = "status",columnDefinition = "int default 0", nullable = true)
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Byte status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
     @Basic
-    @Column(name = "need_hand_JS")
+    @Column(name = "need_hand_JS",columnDefinition = "tiny int default 0", nullable = true)
     public Byte getNeedHandJs() {
         return needHandJs;
     }
@@ -61,7 +68,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "page_id")
+    @Column(name = "page_id",nullable = true)
     public Integer getPageId() {
         return pageId;
     }
@@ -71,7 +78,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "weight")
+    @Column(name = "weight",columnDefinition = "int default 5", nullable = true)
     public Integer getWeight() {
         return weight;
     }
@@ -81,7 +88,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "retry_time")
+    @Column(name = "retry_time",columnDefinition = "int default 0", nullable = true)
     public Integer getRetryTime() {
         return retryTime;
     }
@@ -91,7 +98,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "deepth")
+    @Column(name = "deepth",columnDefinition = "int default 0", nullable = true)
     public Integer getDeepth() {
         return deepth;
     }
@@ -101,7 +108,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "domain")
+    @Column(name = "domain",nullable = true, length = 256)
     public String getDomain() {
         return domain;
     }
@@ -111,7 +118,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "is_seed")
+    @Column(name = "is_seed",columnDefinition = "tiny int default 0", nullable = true)
     public Byte getIsSeed() {
         return isSeed;
     }
@@ -121,7 +128,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "max_deepth")
+    @Column(name = "max_deepth",columnDefinition = "int default 3", nullable = true)
     public Integer getMaxDeepth() {
         return maxDeepth;
     }
@@ -166,5 +173,17 @@ public class UrlEntity {
         result = 31 * result + (isSeed != null ? isSeed.hashCode() : 0);
         result = 31 * result + (maxDeepth != null ? maxDeepth.hashCode() : 0);
         return result;
+    }
+
+    private String md5;
+
+    @Basic
+    @Column(name = "md5", nullable = true, length = 64)
+    public String getMd5() {
+        return md5;
+    }
+
+    public void setMd5(String md5) {
+        this.md5 = md5;
     }
 }

@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  * Created by zybang on 2016/4/1.
  */
 @Entity
-@Table(name = "link", schema = "spider", catalog = "")
+@Table(name = "link", schema = "spider")
 public class LinkEntity {
     private int id;
     private String fromUrl;
@@ -16,7 +16,7 @@ public class LinkEntity {
     private Timestamp updateTime;
 
     @Id
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     public int getId() {
         return id;
     }
@@ -26,7 +26,7 @@ public class LinkEntity {
     }
 
     @Basic
-    @Column(name = "from_url")
+    @Column(name = "from_url", nullable = false, length = 512)
     public String getFromUrl() {
         return fromUrl;
     }
@@ -36,7 +36,7 @@ public class LinkEntity {
     }
 
     @Basic
-    @Column(name = "to_url")
+    @Column(name = "to_url", nullable = false, length = 512)
     public String getToUrl() {
         return toUrl;
     }
@@ -46,7 +46,7 @@ public class LinkEntity {
     }
 
     @Basic
-    @Column(name = "create_time")
+    @Column(name = "create_time", nullable = true)
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -56,7 +56,7 @@ public class LinkEntity {
     }
 
     @Basic
-    @Column(name = "update_time")
+    @Column(name = "update_time", nullable = true)
     public Timestamp getUpdateTime() {
         return updateTime;
     }
@@ -89,5 +89,41 @@ public class LinkEntity {
         result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
         result = 31 * result + (updateTime != null ? updateTime.hashCode() : 0);
         return result;
+    }
+
+    private int fromId;
+
+    @Basic
+    @Column(name = "from_id", nullable = false)
+    public int getFromId() {
+        return fromId;
+    }
+
+    public void setFromId(int fromId) {
+        this.fromId = fromId;
+    }
+
+    private int toId;
+
+    @Basic
+    @Column(name = "to_id", nullable = false)
+    public int getToId() {
+        return toId;
+    }
+
+    public void setToId(int toId) {
+        this.toId = toId;
+    }
+
+    private String text;
+
+    @Basic
+    @Column(name = "text", nullable = true, length = -1)
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

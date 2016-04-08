@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="cn.blacklighting.entity.PageEntity" table="page" schema="spider">
+        <id name="id">
+            <column name="id" sql-type="int(10) unsigned"/>
+        </id>
+        <property name="urlId">
+            <column name="url_id" sql-type="int(10) unsigned" not-null="false"/>
+        </property>
+        <property name="pagePath">
+            <column name="page_path" sql-type="varchar(256)" length="256" not-null="false"/>
+        </property>
+        <property name="includeLinksNu">
+            <column name="include_links_nu" sql-type="int(10) unsigned" not-null="false"/>
+        </property>
+        <property name="docType">
+            <column name="doc_type" sql-type="varchar(32)" length="32" not-null="false"/>
+        </property>
+        <property name="updateTime">
+            <column name="update_time" sql-type="int(11)" not-null="false"/>
+        </property>
+        <property name="jsHandled">
+            <column name="JS_handled" sql-type="tinyint(1)" not-null="false"/>
+        </property>
+    </class>
+</hibernate-mapping>

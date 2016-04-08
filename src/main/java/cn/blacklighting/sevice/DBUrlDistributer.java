@@ -3,6 +3,7 @@ package cn.blacklighting.sevice;
 import cn.blacklighting.entity.UrlEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -38,55 +39,57 @@ public class DBUrlDistributer implements UrlDistributer {
         service.execute(new FetchNewUrl());
     }
 
-    private void fetchNewUrl(){
-        while (urlQueue.size() > urlQueueMaxLen / 2) {
-            synchronized (urlQueue) {
-                try {
-                    urlQueue.wait(60 * 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    logger.fatal("Error on fetch new url wating urlQueue",e);
-                }
-            }
-        }
-        if(urlQueue.size()==urlQueueMaxLen){
-            logger.info("URLQueue is full");
-            return;
-        }
-        logger.info("Begin to fetch new seed");
-        Session s=db.getSession();
-        s.beginTransaction();
-        try {
-            //获取新的url 保证种子URL被先抓取
-            List urls=s.createQuery("from UrlEntity where status =0 order by isSeed desc")
-                    .setMaxResults(urlQueueMaxLen-urlQueue.size()).list();
-            int seedSum=0;
-            for (UrlEntity sn :(List<UrlEntity>)urls){
-
-                urlQueue.put(sn);
-                sn.setStatus((byte)1);
-                s.update(sn);
-                seedSum++;
-            }
-            s.getTransaction().commit();
-            logger.info("New seeds fetched : "+seedSum);
-
-        } catch (InterruptedException e) {
-            logger.fatal("Error on fetch new seeds or url",e);
-            e.printStackTrace();
-        }finally {
-            //只是将URL队列时候发生了异常，不必回滚
-            s.getTransaction().commit();
-            s.close();
-        }
-
-    }
-
     private class FetchNewUrl implements Runnable{
 
         public void run() {
             while(fethNewUrl.get()){
-                fetchNewUrl();
+                int seedSum=0;
+                while (urlQueue.size() > urlQueueMaxLen / 2) {
+                    synchronized (urlQueue) {
+                        try {
+                            urlQueue.wait(60 * 1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            logger.fatal("Error on fetch new url waiting urlQueue",e);
+                        }
+                    }
+                }
+                if(urlQueue.size()==urlQueueMaxLen){
+                    logger.info("URLQueue is full");
+                }
+                logger.info("Begin to fetch new seed");
+                Session s=db.getSession();
+                Transaction transaction = s.beginTransaction();
+                try {
+                    //获取新的url 保证种子URL被先抓取
+                    List urls=s.createQuery("from UrlEntity where status =0 order by weight desc")
+                            .setMaxResults(urlQueueMaxLen-urlQueue.size()).list();
+                    for (UrlEntity sn :(List<UrlEntity>)urls){
+
+                        urlQueue.put(sn);
+//                        sn.setStatus(1);
+//                        s.merge(sn);
+                        seedSum++;
+                    }
+                    transaction.commit();
+                    logger.info("New seeds fetched : "+seedSum);
+
+                } catch (Exception e) {
+                    //只是将URL队列时候发生了异常，不必回滚
+                    logger.fatal("Error on fetch new seeds or url",e);
+                    e.printStackTrace();
+                }finally {
+                    s.close();
+                }
+                if(seedSum==0){
+                    try {
+                        Thread.currentThread().sleep(10*1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    this.notifyAll();
+                }
             }
         }
     }
@@ -117,7 +120,7 @@ public class DBUrlDistributer implements UrlDistributer {
     public void setUrlFail(UrlEntity url) {
         Session s=db.getSession();
         s.beginTransaction();
-        url.setStatus((byte)0);
+        url.setStatus(0);
         url.setRetryTime(url.getRetryTime()+1);
         s.save(url);
         s.getTransaction().commit();
