@@ -5,6 +5,7 @@ package cn.blacklighting;
 
 import cn.blacklighting.entity.UrlEntity;
 import cn.blacklighting.sevice.*;
+import cn.blacklighting.util.CrawlerUtil;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -44,21 +45,6 @@ public class Main {
         return def;
     }
 
-    static String getDomainName(String url) {
-        if(!(url.startsWith("http")||url.startsWith("ftp"))){
-            url="http://"+url;
-        }
-        URI uri = null;
-        try {
-            uri = new URI(url);
-            String domain = uri.getHost();
-            domain= domain!=null&&domain.startsWith("www.") ? domain.substring(4) : domain;
-            return domain;
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     static void seedDBUsingFile(String fileName) {
         DBService db = DBService.getInstance();
@@ -85,7 +71,7 @@ public class Main {
                 url.setDeepth(0);
                 url.setRetryTime(0);
                 url.setStatus(0);
-                url.setDomain(getDomainName(infos[0]));
+                url.setDomain(CrawlerUtil.getDomainName(infos[0]));
                 s.save(url);
                 transaction.commit();
                 seedNum++;

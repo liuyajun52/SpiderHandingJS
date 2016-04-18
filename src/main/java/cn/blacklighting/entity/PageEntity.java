@@ -1,6 +1,7 @@
 package cn.blacklighting.entity;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 /**
  * Created by zybang on 2016/4/1.
@@ -13,8 +14,9 @@ public class PageEntity {
     private String pagePath;
     private Integer includeLinksNu;
     private String docType;
-    private Integer updateTime;
+    private Timestamp updateTime;
     private Byte jsHandled;
+
 
     @Id
     @Column(name = "id", nullable = false)
@@ -46,15 +48,6 @@ public class PageEntity {
         this.pagePath = pagePath;
     }
 
-    @Basic
-    @Column(name = "include_links_nu", nullable = true)
-    public Integer getIncludeLinksNu() {
-        return includeLinksNu;
-    }
-
-    public void setIncludeLinksNu(Integer includeLinksNu) {
-        this.includeLinksNu = includeLinksNu;
-    }
 
     @Basic
     @Column(name = "doc_type", nullable = true, length = 32)
@@ -68,11 +61,11 @@ public class PageEntity {
 
     @Basic
     @Column(name = "update_time", nullable = true)
-    public Integer getUpdateTime() {
+    public Timestamp getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(Integer updateTime) {
+    public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
     }
 

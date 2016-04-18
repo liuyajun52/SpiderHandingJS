@@ -1,7 +1,10 @@
 package cn.blacklighting.sevice;
 
 import cn.blacklighting.conf.SpiderHttpHeaderConf;
+import cn.blacklighting.entity.LinkEntity;
 import cn.blacklighting.entity.UrlEntity;
+import cn.blacklighting.util.CrawlerUtil;
+import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -9,9 +12,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.HttpClientUtils;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.annotations.Type;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 
@@ -38,11 +45,13 @@ public class PageCrawlingService {
     private ExecutorService crawlerPool;
     private int threadPoolSize=1;
     private AtomicBoolean shutDown;
+    private DBService db;
 
     public PageCrawlingService(UrlDistributer urlDistributer,HtmlWriter htmlWriter){
         this.urlDistributer=urlDistributer;
         this.htmlWriter=htmlWriter;
         this.shutDown=new AtomicBoolean(false);
+        this.db=DBService.getInstance();
     }
 
 
@@ -131,9 +140,37 @@ public class PageCrawlingService {
                         htmlWriter.writeHtml(urlEntity,html.getBytes(DEFAULT_PAGE_ENCODE));
                         TagNode nodes=htmlCleaner.clean(html);
                         List<TagNode> as = nodes.getElementListByName("a", true);
+                        int linkAmount=0;
                         for(TagNode n:as){
-                            n.getAttributeByName("ref");
+                            String ref = n.getAttributeByName("ref");
+                            Session s=null;
+                            if(ref!=null){
+                                linkAmount++;
+                                s=db.getSession();
+                                String md5= Md5Crypt.md5Crypt(ref.getBytes());
+                                Query query=s.createQuery("from UrlEntity where md5 =: md5");
+                                query.setParameter("md5",md5);
+                                UrlEntity result = (UrlEntity)query.uniqueResult();
+                                s.beginTransaction();
+                                if(result!=null){
+                                    result.setToLinkAmount(result.getToLinkAmount()+1);
+                                    s.merge(result);
+                                }else{
+                                    result=new UrlEntity();
+                                    result.setUrl(ref);
+                                    result.setToLinkAmount(1);
+                                    result.setStatus(0);
+                                    result.setDomain(CrawlerUtil.getDomainName((ref)));
+                                    result.setIsSeed((byte)1);
+                                    s.save(result);
 
+                                    LinkEntity link=new LinkEntity();
+                                    link.setFromId(urlEntity.getId());
+                                    link.setToId(urlEntity.getId());
+                                    link.setFromUrl(urlEntity.getUrl());
+
+                                }
+                            }
                         }
                     }
                 } catch (Exception e) {

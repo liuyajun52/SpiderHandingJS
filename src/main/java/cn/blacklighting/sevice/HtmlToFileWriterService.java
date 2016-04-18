@@ -3,6 +3,7 @@
  */
 package cn.blacklighting.sevice;
 
+import cn.blacklighting.entity.PageEntity;
 import cn.blacklighting.entity.UrlEntity;
 import com.sun.deploy.net.URLEncoder;
 import org.apache.commons.io.FileUtils;
@@ -75,7 +76,15 @@ public class HtmlToFileWriterService implements HtmlWriter {
                     s.beginTransaction();
                     url.setStatus(2);
                     s.merge(url);
-                    s.beginTransaction().commit();
+
+                    PageEntity page=new PageEntity();
+                    page.setDocType("html");
+                    page.setJsHandled(url.getNeedHandJs());
+                    page.setPagePath(path.toString());
+                    page.setUrlId(url.getId());
+                    s.save(page);
+
+                    s.getTransaction().commit();
                     s.close();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -85,64 +94,5 @@ public class HtmlToFileWriterService implements HtmlWriter {
         }
     }
 
-    //	public static String OUTPUT_FILE_NAME = null;
-//	private static OutputStream out = null;
-//	private static BufferedWriter writer=null;
-////	private static LinkedBlockingQueue<String> outQueue = null;
-//	private static LinkedBlockingQueue<String> outArrayQueue=null;
-//	static boolean stop = false;
-//
-//	public static synchronized void writeOut(String data){
-//		if (out == null) {
-//			try {
-//				out = new FileOutputStream(new File(OUTPUT_FILE_NAME));
-//				writer=new BufferedWriter(new OutputStreamWriter(out,"utf-8"));
-//			} catch (FileNotFoundException e) {
-//				e.printStackTrace();
-//				System.err.println("can not create output file !!!");
-//				System.exit(0);
-//			} catch (UnsupportedEncodingException e) {
-//				e.printStackTrace();
-//			}
-//			outArrayQueue = new LinkedBlockingQueue<String>();
-//			new WriteByteFileThread().start();
-//		}
-//		try {
-//			outArrayQueue.put(data);
-//		} catch (InterruptedException e) {
-////			e.printStackTrace();
-//		}
-//	}
-//
-//	public static synchronized void closeOut() {
-//		stop = true;
-//	}
-//
-//	public static synchronized void setOutPutFile(String fileName){
-//		if(OUTPUT_FILE_NAME==null){
-//			OUTPUT_FILE_NAME=fileName;
-//		}
-//	}
-
-
-//
-//	static class WriteByteFileThread extends Thread {
-//		@Override
-//		public void run() {
-//			super.run();
-//			try {
-//				while ((!stop) || (!outArrayQueue.isEmpty())) {
-//					String outHtml = outArrayQueue.take();
-//					writer.write(outHtml);
-//					writer.flush();
-//				}
-//				writer.flush();
-//				writer.close();
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
-//
-//	}
 
 }

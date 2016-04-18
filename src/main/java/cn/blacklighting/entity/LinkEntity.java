@@ -7,13 +7,16 @@ import java.sql.Timestamp;
  * Created by zybang on 2016/4/1.
  */
 @Entity
-@Table(name = "link", schema = "spider")
+@Table(name = "link", schema = "spider", catalog = "")
 public class LinkEntity {
     private int id;
     private String fromUrl;
     private String toUrl;
     private Timestamp createTime;
     private Timestamp updateTime;
+    private int fromId;
+    private int toId;
+    private String text;
 
     @Id
     @Column(name = "id", nullable = false)
@@ -91,8 +94,6 @@ public class LinkEntity {
         return result;
     }
 
-    private int fromId;
-
     @Basic
     @Column(name = "from_id", nullable = false)
     public int getFromId() {
@@ -103,8 +104,6 @@ public class LinkEntity {
         this.fromId = fromId;
     }
 
-    private int toId;
-
     @Basic
     @Column(name = "to_id", nullable = false)
     public int getToId() {
@@ -114,8 +113,6 @@ public class LinkEntity {
     public void setToId(int toId) {
         this.toId = toId;
     }
-
-    private String text;
 
     @Basic
     @Column(name = "text", nullable = true, length = -1)

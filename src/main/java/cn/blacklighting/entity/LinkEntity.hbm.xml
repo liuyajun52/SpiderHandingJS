@@ -15,10 +15,10 @@
             <column name="to_url" sql-type="varchar(512)" length="512"/>
         </property>
         <property name="createTime">
-            <column name="create_time" sql-type="timestamp" not-null="false"/>
+            <column name="create_time" sql-type="timestamp" not-null="true"/>
         </property>
         <property name="updateTime">
-            <column name="update_time" sql-type="timestamp" not-null="false"/>
+            <column name="update_time" sql-type="timestamp" not-null="true"/>
         </property>
         <property name="fromId">
             <column name="from_id" sql-type="int(11)"/>
@@ -27,7 +27,7 @@
             <column name="to_id" sql-type="int(11)"/>
         </property>
         <property name="text">
-            <column name="text" sql-type="text" not-null="false"/>
+            <column name="text" sql-type="text" not-null="true"/>
         </property>
     </class>
 </hibernate-mapping>

@@ -1,12 +1,13 @@
 package cn.blacklighting.entity;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 /**
  * Created by Yajun Liu on 2016/4/4 0004.
  */
 @Entity
-@Table(name = "url", schema = "spider")
+@Table(name = "url", schema = "spider", catalog = "")
 public class UrlEntity {
 
     public static final int STATUS_NEW=0;
@@ -25,7 +26,11 @@ public class UrlEntity {
     private String domain;
     private Byte isSeed;
     private Integer maxDeepth;
-
+    private String md5;
+    private int outLinkAmount;
+    private int toLinkAmount;
+    private int pageRank;
+    private Timestamp createTime;
 
     @Id
     @Column(name = "id",nullable = false)
@@ -175,8 +180,6 @@ public class UrlEntity {
         return result;
     }
 
-    private String md5;
-
     @Basic
     @Column(name = "md5", nullable = true, length = 64)
     public String getMd5() {
@@ -185,5 +188,45 @@ public class UrlEntity {
 
     public void setMd5(String md5) {
         this.md5 = md5;
+    }
+
+    @Basic
+    @Column(name = "out_link_amount", nullable = false)
+    public int getOutLinkAmount() {
+        return outLinkAmount;
+    }
+
+    public void setOutLinkAmount(int outLinkAmount) {
+        this.outLinkAmount = outLinkAmount;
+    }
+
+    @Basic
+    @Column(name = "to_link_amount", nullable = false)
+    public int getToLinkAmount() {
+        return toLinkAmount;
+    }
+
+    public void setToLinkAmount(int toLinkAmout) {
+        this.toLinkAmount = toLinkAmout;
+    }
+
+    @Basic
+    @Column(name = "page_rank", nullable = false)
+    public int getPageRank() {
+        return pageRank;
+    }
+
+    public void setPageRank(int pageRank) {
+        this.pageRank = pageRank;
+    }
+
+    @Basic
+    @Column(name = "create_time", nullable = false)
+    public Timestamp getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
     }
 }
