@@ -3,9 +3,11 @@
  */
 package cn.blacklighting;
 
+import cn.blacklighting.dao.UrlDao;
 import cn.blacklighting.entity.UrlEntity;
 import cn.blacklighting.sevice.*;
 import cn.blacklighting.util.CrawlerUtil;
+import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -30,6 +32,7 @@ public class Main {
     public static boolean needProxy = true;
     public static String fileEncoding = "utf8";
 
+
     static void printUsage() {
         System.out.println("Usage: seedDB| crawl");
         System.out.println("       seedDB:use give text file to insrt to the url DB,the  file given should " +
@@ -47,8 +50,9 @@ public class Main {
 
 
     static void seedDBUsingFile(String fileName) {
-        DBService db = DBService.getInstance();
+
         Session s=null;
+        UrlDao urlDao=new UrlDao();
         int seedNum = 0;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
@@ -56,8 +60,7 @@ public class Main {
             while ((line = reader.readLine()) != null) {
                 String[] infos = line.split("\t");
                 UrlEntity url = new UrlEntity();
-                s =db.getSession();
-                Transaction transaction = s.beginTransaction();
+
                 url.setUrl(infos[0]);
                 url.setNeedHandJs(Byte.parseByte((String) getArrayIndexOrDef(infos,
                         1, "0")));
@@ -71,9 +74,9 @@ public class Main {
                 url.setDeepth(0);
                 url.setRetryTime(0);
                 url.setStatus(0);
+                url.setMd5(Md5Crypt.md5Crypt(infos[0].getBytes()));
                 url.setDomain(CrawlerUtil.getDomainName(infos[0]));
-                s.save(url);
-                transaction.commit();
+                urlDao.add(url);
                 seedNum++;
             }
         } catch (IOException e) {

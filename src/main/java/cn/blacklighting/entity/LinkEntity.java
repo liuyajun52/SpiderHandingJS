@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  * Created by zybang on 2016/4/1.
  */
 @Entity
-@Table(name = "link", schema = "spider", catalog = "")
+@Table(name = "link", schema = "spider")
 public class LinkEntity {
     private int id;
     private String fromUrl;
@@ -17,6 +17,20 @@ public class LinkEntity {
     private int fromId;
     private int toId;
     private String text;
+
+    public LinkEntity() {
+    }
+
+    public LinkEntity(int id, String fromUrl, String toUrl, Timestamp createTime, Timestamp updateTime, int fromId, int toId, String text) {
+        this.id = id;
+        this.fromUrl = fromUrl;
+        this.toUrl = toUrl;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
+        this.fromId = fromId;
+        this.toId = toId;
+        this.text = text;
+    }
 
     @Id
     @Column(name = "id", nullable = false)

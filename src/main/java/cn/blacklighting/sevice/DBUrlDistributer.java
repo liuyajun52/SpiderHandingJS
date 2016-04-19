@@ -1,5 +1,6 @@
 package cn.blacklighting.sevice;
 
+import cn.blacklighting.dao.UrlDao;
 import cn.blacklighting.entity.UrlEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -22,10 +23,12 @@ public class DBUrlDistributer implements UrlDistributer {
     private final LinkedBlockingQueue<UrlEntity> urlQueue;
     private int urlQueueMaxLen=10000;
     private AtomicBoolean fethNewUrl;
+    private UrlDao urlDao;
 
     public DBUrlDistributer(){
         logger.info("Spider url distributer is set to DBUrlDistributer");
         db=DBService.getInstance();
+        urlDao=new UrlDao();
         urlQueue=new LinkedBlockingQueue<UrlEntity>(urlQueueMaxLen);
         fethNewUrl=new AtomicBoolean(true);
         init();
@@ -65,10 +68,9 @@ public class DBUrlDistributer implements UrlDistributer {
                     List urls=s.createQuery("from UrlEntity where status =0 order by weight desc")
                             .setMaxResults(urlQueueMaxLen-urlQueue.size()).list();
                     for (UrlEntity sn :(List<UrlEntity>)urls){
-
                         urlQueue.put(sn);
-//                        sn.setStatus(1);
-//                        s.merge(sn);
+                        sn.setStatus(UrlEntity.STATUS_IN_QUEUE);
+
                         seedSum++;
                     }
                     transaction.commit();

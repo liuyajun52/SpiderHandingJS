@@ -1,5 +1,6 @@
 package cn.blacklighting;
 
+import cn.blacklighting.util.CrawlerUtil;
 import junit.framework.TestCase;
 
 /**
@@ -23,9 +24,9 @@ public class MainTest extends TestCase {
     }
 
     public void testGetDomainName() throws Exception {
-        assertEquals(Main.getDomainName("http://baidu.com"),"baidu.com");
-        assertEquals(Main.getDomainName("www.baidu.com"),"baidu.com");
-        assertEquals(Main.getDomainName("https://www.baidu.com"),"baidu.com");
+        assertEquals(CrawlerUtil.getDomainName("http://baidu.com"),"baidu.com");
+        assertEquals(CrawlerUtil.getDomainName("www.baidu.com"),"baidu.com");
+        assertEquals(CrawlerUtil.getDomainName("https://www.baidu.com"),"baidu.com");
     }
 
     public void testSeedDBUsingFile() throws Exception {

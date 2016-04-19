@@ -4,9 +4,9 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 /**
  * Created by zybang on 2016/4/1.
@@ -16,18 +16,17 @@ public class DBService {
     private static org.apache.log4j.Logger logger= Logger.getLogger(DBService.class);
 
     private final SessionFactory ourSessionFactory;
-    private final ServiceRegistry serviceRegistry;
     private static DBService service ;
 
     private DBService(){
+        final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
+                .configure() // configures settings from hibernate.cfg.xml
+                .build();
         try {
-            Configuration configuration = new Configuration();
-            configuration.configure();
-
-            serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();
-            ourSessionFactory = configuration.buildSessionFactory(serviceRegistry);
+            ourSessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
         } catch (Throwable ex) {
             logger.fatal("Error on DBService get Factory",ex);
+            StandardServiceRegistryBuilder.destroy( registry );
             throw new ExceptionInInitializerError(ex);
         }
     }

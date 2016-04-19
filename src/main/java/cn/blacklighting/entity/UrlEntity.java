@@ -7,13 +7,37 @@ import java.sql.Timestamp;
  * Created by Yajun Liu on 2016/4/4 0004.
  */
 @Entity
-@Table(name = "url", schema = "spider", catalog = "")
+@Table(name = "url", schema = "spider")
 public class UrlEntity {
+    /**
+     * URL状态：新获取
+     */
+    public static final int STATUS_NEW = 0;
 
-    public static final int STATUS_NEW=0;
-    public static final int STATUS_IN_QUEUE=1;
-    public static final int STATUS_CRAWED=2;
-    public static final int STATUS_FAILED=2;
+    /**
+     * URL状态：在抓取队列
+     */
+    public static final int STATUS_IN_QUEUE = 1;
+
+    /**
+     * URL状态：抓取成功
+     */
+    public static final int STATUS_CRAWED = 2;
+
+    /**
+     * URL状态：抓取失败
+     */
+    public static final int STATUS_FAILED = 3;
+
+    /**
+     * URL状态：不需要抓取
+     */
+    public static final int STATUS_UNNEED =4;
+
+    /**
+     * URL状态：已经尝试，但是无内容
+     */
+    public static final int STATUS_NO_CONTENT=5;
 
     private int id;
     private String url;
@@ -32,8 +56,33 @@ public class UrlEntity {
     private int pageRank;
     private Timestamp createTime;
 
+    public UrlEntity() {
+    }
+
+    public UrlEntity(int id, String url, Integer status, Byte needHandJs, Integer pageId,
+                     Integer weight, Integer retryTime, Integer deepth, String domain,
+                     Byte isSeed, Integer maxDeepth, String md5, int outLinkAmount,
+                     int toLinkAmount, int pageRank, Timestamp createTime) {
+        this.id = id;
+        this.url = url;
+        this.status = status;
+        this.needHandJs = needHandJs;
+        this.pageId = pageId;
+        this.weight = weight;
+        this.retryTime = retryTime;
+        this.deepth = deepth;
+        this.domain = domain;
+        this.isSeed = isSeed;
+        this.maxDeepth = maxDeepth;
+        this.md5 = md5;
+        this.outLinkAmount = outLinkAmount;
+        this.toLinkAmount = toLinkAmount;
+        this.pageRank = pageRank;
+        this.createTime = createTime;
+    }
+
     @Id
-    @Column(name = "id",nullable = false)
+    @Column(name = "id", nullable = false)
     public int getId() {
         return id;
     }
@@ -53,7 +102,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "status",columnDefinition = "int default 0", nullable = true)
+    @Column(name = "status", columnDefinition = "int default 0", nullable = true)
     public Integer getStatus() {
         return status;
     }
@@ -63,7 +112,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "need_hand_JS",columnDefinition = "tiny int default 0", nullable = true)
+    @Column(name = "need_hand_JS", columnDefinition = "tiny int default 0", nullable = true)
     public Byte getNeedHandJs() {
         return needHandJs;
     }
@@ -73,7 +122,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "page_id",nullable = true)
+    @Column(name = "page_id", nullable = true)
     public Integer getPageId() {
         return pageId;
     }
@@ -83,7 +132,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "weight",columnDefinition = "int default 5", nullable = true)
+    @Column(name = "weight", columnDefinition = "int default 5", nullable = true)
     public Integer getWeight() {
         return weight;
     }
@@ -93,7 +142,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "retry_time",columnDefinition = "int default 0", nullable = true)
+    @Column(name = "retry_time", columnDefinition = "int default 0", nullable = true)
     public Integer getRetryTime() {
         return retryTime;
     }
@@ -103,7 +152,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "deepth",columnDefinition = "int default 0", nullable = true)
+    @Column(name = "deepth", columnDefinition = "int default 0", nullable = true)
     public Integer getDeepth() {
         return deepth;
     }
@@ -113,7 +162,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "domain",nullable = true, length = 256)
+    @Column(name = "domain", nullable = true, length = 256)
     public String getDomain() {
         return domain;
     }
@@ -123,7 +172,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "is_seed",columnDefinition = "tiny int default 0", nullable = true)
+    @Column(name = "is_seed", columnDefinition = "tiny int default 0", nullable = true)
     public Byte getIsSeed() {
         return isSeed;
     }
@@ -133,7 +182,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "max_deepth",columnDefinition = "int default 3", nullable = true)
+    @Column(name = "max_deepth", columnDefinition = "int default 3", nullable = true)
     public Integer getMaxDeepth() {
         return maxDeepth;
     }

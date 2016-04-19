@@ -3,6 +3,8 @@
  */
 package cn.blacklighting.sevice;
 
+import cn.blacklighting.dao.PageDao;
+import cn.blacklighting.dao.UrlDao;
 import cn.blacklighting.entity.PageEntity;
 import cn.blacklighting.entity.UrlEntity;
 import com.sun.deploy.net.URLEncoder;
@@ -29,14 +31,17 @@ public class HtmlToFileWriterService implements HtmlWriter {
     private BlockingQueue<AbstractMap.SimpleEntry<UrlEntity, byte[]>> htmlQueue = null;
     private File dataRootDir;
     private AtomicBoolean shutDown;
-    private DBService db;
+
+    private UrlDao urlDao;
+    private PageDao pageDao;
 
 
     public HtmlToFileWriterService() {
         htmlQueue = new LinkedBlockingQueue<>();
         dataRootDir = new File(dataDir);
         shutDown = new AtomicBoolean(false);
-        db=DBService.getInstance();
+        urlDao=new UrlDao();
+        pageDao=new PageDao();
         if (!dataRootDir.exists()) {
             dataRootDir.mkdir();
         }
@@ -72,20 +77,16 @@ public class HtmlToFileWriterService implements HtmlWriter {
                     File out = path.toFile();
                     FileUtils.writeByteArrayToFile(out,html);
 
-                    Session s=db.getSession();
-                    s.beginTransaction();
-                    url.setStatus(2);
-                    s.merge(url);
+                    url.setStatus(UrlEntity.STATUS_CRAWED);
+                    urlDao.update(url);
 
                     PageEntity page=new PageEntity();
                     page.setDocType("html");
                     page.setJsHandled(url.getNeedHandJs());
                     page.setPagePath(path.toString());
                     page.setUrlId(url.getId());
-                    s.save(page);
+                    pageDao.add(page);
 
-                    s.getTransaction().commit();
-                    s.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                     logger.fatal("Error on wait on HtmlToFileWriterService", e);

@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  * Created by zybang on 2016/4/1.
  */
 @Entity
-@Table(name = "page", schema = "spider", catalog = "")
+@Table(name = "page", schema = "spider")
 public class PageEntity {
     private int id;
     private Integer urlId;
@@ -17,6 +17,19 @@ public class PageEntity {
     private Timestamp updateTime;
     private Byte jsHandled;
 
+    public PageEntity() {
+    }
+
+    public PageEntity(int id, Integer urlId, String pagePath,
+                      Integer includeLinksNu, String docType, Timestamp updateTime, Byte jsHandled) {
+        this.id = id;
+        this.urlId = urlId;
+        this.pagePath = pagePath;
+        this.includeLinksNu = includeLinksNu;
+        this.docType = docType;
+        this.updateTime = updateTime;
+        this.jsHandled = jsHandled;
+    }
 
     @Id
     @Column(name = "id", nullable = false)
