@@ -1,7 +1,7 @@
 package cn.blacklighting.sevice;
 
 import cn.blacklighting.dao.UrlDao;
-import cn.blacklighting.entity.UrlEntity;
+import cn.blacklighting.models.UrlEntity;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;

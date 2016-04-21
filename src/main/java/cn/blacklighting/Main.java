@@ -4,17 +4,16 @@
 package cn.blacklighting;
 
 import cn.blacklighting.dao.UrlDao;
-import cn.blacklighting.entity.UrlEntity;
+import cn.blacklighting.models.UrlEntity;
 import cn.blacklighting.sevice.*;
 import cn.blacklighting.util.CrawlerUtil;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.*;
-import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 
 /**
@@ -22,12 +21,6 @@ import java.util.logging.Level;
  */
 public class Main {
     private static Logger logger=LogManager.getRootLogger();
-    public static int THRED_POOL_SIZE = 0;
-    static HtmlExtracterService extracter = null;
-    static LinkedBlockingQueue<Entry<String, String>> htmlQueue = null;
-    public static boolean needProxy = true;
-    public static String fileEncoding = "utf8";
-
 
     static void printUsage() {
         System.out.println("Usage: seedDB| crawl");
@@ -81,7 +74,7 @@ public class Main {
         }
     }
 
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String[] args) throws IOException, ConfigurationException {
 
         Properties props = new Properties();
         props.load(Main.class.getResourceAsStream("/log4j.properties"));
@@ -92,7 +85,6 @@ public class Main {
             printUsage();
             return;
         }
-
 
         if (args[0].equals("seedDB")) {
             if (args.length < 2) {

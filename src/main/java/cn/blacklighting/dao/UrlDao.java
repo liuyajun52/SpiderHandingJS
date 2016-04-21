@@ -1,11 +1,7 @@
 package cn.blacklighting.dao;
 
-import cn.blacklighting.entity.UrlEntity;
-import org.hibernate.Query;
+import cn.blacklighting.models.UrlEntity;
 import org.hibernate.Session;
-import org.hibernate.type.Type;
-
-import java.util.List;
 
 /**
  * Created by zybang on 2016/4/12.

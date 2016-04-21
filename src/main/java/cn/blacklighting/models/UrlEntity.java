@@ -1,4 +1,4 @@
-package cn.blacklighting.entity;
+package cn.blacklighting.models;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;

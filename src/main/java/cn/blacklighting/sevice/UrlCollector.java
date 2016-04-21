@@ -1,7 +1,7 @@
 package cn.blacklighting.sevice;
 
-import cn.blacklighting.entity.LinkEntity;
-import cn.blacklighting.entity.UrlEntity;
+import cn.blacklighting.models.LinkEntity;
+import cn.blacklighting.models.UrlEntity;
 
 /**
  * Created by zybang on 2016/4/8.

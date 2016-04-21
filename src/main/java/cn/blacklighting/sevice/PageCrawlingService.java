@@ -1,10 +1,10 @@
 package cn.blacklighting.sevice;
 
-import cn.blacklighting.conf.SpiderHttpHeaderConf;
+import cn.blacklighting.conf.HttpHeaderConf;
 import cn.blacklighting.dao.LinkDao;
 import cn.blacklighting.dao.UrlDao;
-import cn.blacklighting.entity.LinkEntity;
-import cn.blacklighting.entity.UrlEntity;
+import cn.blacklighting.models.LinkEntity;
+import cn.blacklighting.models.UrlEntity;
 import cn.blacklighting.util.CrawlerUtil;
 import org.apache.any23.encoding.TikaEncodingDetector;
 import org.apache.commons.io.IOUtils;
@@ -32,7 +32,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.InflaterInputStream;
 
 /**
  * Created by zybang on 2016/4/5.
@@ -214,15 +213,15 @@ public class PageCrawlingService {
 
     private HttpGet setHttpRequestHeader(
             HttpGet request) {
-        request.addHeader("Accept", SpiderHttpHeaderConf
+        request.addHeader("Accept", HttpHeaderConf
                 .getInstance().getHeaderByKey("Accept"));
-        request.addHeader("Connection", SpiderHttpHeaderConf
+        request.addHeader("Connection", HttpHeaderConf
                 .getInstance().getHeaderByKey("Connection"));
-        request.addHeader("User-Agent", SpiderHttpHeaderConf
+        request.addHeader("User-Agent", HttpHeaderConf
                 .getInstance().getHeaderByKey("User-Agent"));
-        request.addHeader("Accept-Encoding", SpiderHttpHeaderConf
+        request.addHeader("Accept-Encoding", HttpHeaderConf
                 .getInstance().getHeaderByKey("Accept-Encoding"));
-        request.addHeader("Accept-Language", SpiderHttpHeaderConf
+        request.addHeader("Accept-Language", HttpHeaderConf
                 .getInstance().getHeaderByKey("Accept-Language"));
         return request;
     }

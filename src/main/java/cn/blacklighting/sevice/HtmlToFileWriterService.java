@@ -5,14 +5,13 @@ package cn.blacklighting.sevice;
 
 import cn.blacklighting.dao.PageDao;
 import cn.blacklighting.dao.UrlDao;
-import cn.blacklighting.entity.PageEntity;
-import cn.blacklighting.entity.UrlEntity;
+import cn.blacklighting.models.PageEntity;
+import cn.blacklighting.models.UrlEntity;
 import cn.blacklighting.util.CrawlerUtil;
 import com.sun.deploy.net.URLEncoder;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 
 import java.io.*;
 import java.nio.file.Path;

@@ -16,12 +16,9 @@
         <property name="connection.useUnicode">true </property>
         <property name="connection.characterEncoding">utf8 </property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-        <mapping class="cn.blacklighting.entity.LinkEntity"/>
-        <mapping class="cn.blacklighting.entity.PageEntity"/>
-        <mapping class="cn.blacklighting.entity.UrlEntity"/>
-        <mapping class="cn.blacklighting.entity.DomainEntity"/>
-
-         <!-- DB schema will be updated if needed -->
-        <!-- <property name="hbm2ddl.auto">update</property> -->
+        <mapping class="cn.blacklighting.models.LinkEntity"/>
+        <mapping class="cn.blacklighting.models.PageEntity"/>
+        <mapping class="cn.blacklighting.models.UrlEntity"/>
+        <mapping class="cn.blacklighting.models.DomainEntity"/>
     </session-factory>
 </hibernate-configuration>

@@ -11,8 +11,8 @@ import java.util.Random;
  * @author Yajun Liu
  *
  */
-public class SpiderHttpHeaderConf {
-	private static SpiderHttpHeaderConf conf=null;
+public class HttpHeaderConf {
+	private static HttpHeaderConf conf=null;
 	private static Map<String,String> confMap=null;
 	private static String[] userAgents= {        
 		"Mozilla/5.0 (compatible, MSIE 11, Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko",
@@ -63,12 +63,12 @@ public class SpiderHttpHeaderConf {
         "Opera/9.80 (Windows NT 5.1; U; zh-sg) Presto/2.9.181 Version/12.00",
         "Opera/12.0(Windows NT 5.2;U;en)Presto/22.9.168 Version/12.00"
         };
-	private SpiderHttpHeaderConf(){
+	private HttpHeaderConf(){
 		initConfMap();
 	}
-	public static SpiderHttpHeaderConf getInstance(){
+	public static HttpHeaderConf getInstance(){
 		if(conf==null){
-			conf=new SpiderHttpHeaderConf();
+			conf=new HttpHeaderConf();
 		}
 		return conf;
 	}
