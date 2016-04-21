@@ -1,13 +1,19 @@
 package cn.blacklighting.entity;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Calendar;
 
 /**
  * Created by zybang on 2016/4/1.
  */
 @Entity
 @Table(name = "link", schema = "spider")
+@DynamicInsert
+@DynamicUpdate
 public class LinkEntity {
     private int id;
     private String fromUrl;
@@ -17,20 +23,6 @@ public class LinkEntity {
     private int fromId;
     private int toId;
     private String text;
-
-    public LinkEntity() {
-    }
-
-    public LinkEntity(int id, String fromUrl, String toUrl, Timestamp createTime, Timestamp updateTime, int fromId, int toId, String text) {
-        this.id = id;
-        this.fromUrl = fromUrl;
-        this.toUrl = toUrl;
-        this.createTime = createTime;
-        this.updateTime = updateTime;
-        this.fromId = fromId;
-        this.toId = toId;
-        this.text = text;
-    }
 
     @Id
     @Column(name = "id", nullable = false)
@@ -63,7 +55,7 @@ public class LinkEntity {
     }
 
     @Basic
-    @Column(name = "create_time", nullable = true)
+    @Column(name = "create_time",columnDefinition = "timestamp default current_timestamp" )
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -73,13 +65,11 @@ public class LinkEntity {
     }
 
     @Basic
-    @Column(name = "update_time", nullable = true)
-    public Timestamp getUpdateTime() {
-        return updateTime;
-    }
+    @Column(name ="update_time",columnDefinition = "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    public Timestamp getUpdateTime(){return updateTime;}
 
-    public void setUpdateTime(Timestamp updateTime) {
-        this.updateTime = updateTime;
+    public void setUpdateTime(Timestamp updateTime){
+        this.updateTime=updateTime;
     }
 
     @Override
@@ -136,5 +126,15 @@ public class LinkEntity {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    @PrePersist
+    protected void onCreate(){
+        this.createTime=new Timestamp(Calendar.getInstance().getTime().getTime());
+    }
+
+    @PreUpdate
+    protected void onUpdate(){
+        this.updateTime=new Timestamp(Calendar.getInstance().getTime().getTime());
     }
 }

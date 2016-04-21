@@ -2,6 +2,7 @@ package cn.blacklighting.sevice;
 
 import cn.blacklighting.dao.UrlDao;
 import cn.blacklighting.entity.UrlEntity;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -12,29 +13,30 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**url 分发器，使用MYSQL作为数据源
+/**
+ * url 分发器，使用MYSQL作为数据源
  * Created by zybang on 2016/4/1.
  */
 public class DBUrlDistributer implements UrlDistributer {
 
-    private static org.apache.log4j.Logger logger= Logger.getLogger(DBUrlDistributer.class);
+    private static Logger logger = LogManager.getRootLogger();
 
     private DBService db;
     private final LinkedBlockingQueue<UrlEntity> urlQueue;
-    private int urlQueueMaxLen=10000;
+    private int urlQueueMaxLen = 1000;
     private AtomicBoolean fethNewUrl;
     private UrlDao urlDao;
 
-    public DBUrlDistributer(){
+    public DBUrlDistributer() {
         logger.info("Spider url distributer is set to DBUrlDistributer");
-        db=DBService.getInstance();
-        urlDao=new UrlDao();
-        urlQueue=new LinkedBlockingQueue<UrlEntity>(urlQueueMaxLen);
-        fethNewUrl=new AtomicBoolean(true);
+        db = DBService.getInstance();
+        urlDao = new UrlDao();
+        urlQueue = new LinkedBlockingQueue<UrlEntity>(urlQueueMaxLen);
+        fethNewUrl = new AtomicBoolean(true);
         init();
     }
 
-    private void init(){
+    private void init() {
 
         //设置定时调度任务去获取新的种子URL
         ScheduledExecutorService service = Executors
@@ -42,94 +44,82 @@ public class DBUrlDistributer implements UrlDistributer {
         service.execute(new FetchNewUrl());
     }
 
-    private class FetchNewUrl implements Runnable{
+    private class FetchNewUrl implements Runnable {
 
         public void run() {
-            while(fethNewUrl.get()){
-                int seedSum=0;
-                while (urlQueue.size() > urlQueueMaxLen / 2) {
-                    synchronized (urlQueue) {
+            while (fethNewUrl.get()) {
+                int seedSum = 0;
+                synchronized (urlQueue) {
+                    while (urlQueue.size() > urlQueueMaxLen / 2) {
                         try {
-                            urlQueue.wait(60 * 1000);
+//                            logger.debug("URLQUEUE SIZE IS LARGER THEN 5000");
+                            urlQueue.wait(10);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
-                            logger.fatal("Error on fetch new url waiting urlQueue",e);
+                            logger.fatal("Error on fetch new url waiting urlQueue", e);
                         }
                     }
                 }
-                if(urlQueue.size()==urlQueueMaxLen){
-                    logger.info("URLQueue is full");
-                }
-                logger.info("Begin to fetch new seed");
-                Session s=db.getSession();
+                logger.info("Begin to fetch new seed "+urlQueue.size());
+                Session s = db.getSession();
                 Transaction transaction = s.beginTransaction();
                 try {
                     //获取新的url 保证种子URL被先抓取
-                    List urls=s.createQuery("from UrlEntity where status =0 order by weight desc")
-                            .setMaxResults(urlQueueMaxLen-urlQueue.size()).list();
-                    for (UrlEntity sn :(List<UrlEntity>)urls){
+                    List urls = s.createQuery("from UrlEntity where status =0 order by weight desc")
+                            .setMaxResults(urlQueueMaxLen - urlQueue.size()).list();
+                    transaction.commit();
+                    s.close();
+                    for (UrlEntity sn : (List<UrlEntity>) urls) {
                         urlQueue.put(sn);
-                        sn.setStatus(UrlEntity.STATUS_IN_QUEUE);
-
+                        urlDao.updateUrlStatus(sn,UrlEntity.STATUS_IN_QUEUE);
                         seedSum++;
                     }
-                    transaction.commit();
-                    logger.info("New seeds fetched : "+seedSum);
+                    logger.info("New seeds fetched : " + seedSum);
 
                 } catch (Exception e) {
                     //只是将URL队列时候发生了异常，不必回滚
-                    logger.fatal("Error on fetch new seeds or url",e);
+                    logger.fatal("Error on fetch new seeds or url", e);
                     e.printStackTrace();
-                }finally {
-                    s.close();
                 }
-                if(seedSum==0){
+                if (seedSum == 0) {
                     try {
-                        Thread.currentThread().sleep(10*1000);
+                        Thread.currentThread().sleep(10 * 1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                }else{
-                    this.notifyAll();
                 }
             }
         }
     }
 
     public UrlEntity getNextUrl() {
-        synchronized (this){
-            if(urlQueue.isEmpty()){
-                try {
-                    this.wait(60*1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    logger.fatal("Error on getNewUrl waiting  on Object",e);
-                }
-            }
-        }
-        UrlEntity url=null;
         synchronized (urlQueue){
-            if(urlQueue.size()<urlQueueMaxLen){
-                //唤醒取url线程去取新的URL
-                urlQueue.notifyAll();
-            }
-            //此时队列不可能为空，使用poll也是安全的
-            url=urlQueue.poll();
+            urlQueue.notifyAll();
         }
+        UrlEntity url = null;
+
+        try {
+            logger.debug("Begin to fetch new url "+urlQueue.size());
+            url = urlQueue.take();
+            logger.debug("New Url Fetched "+url);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         return url;
     }
 
     public void setUrlFail(UrlEntity url) {
-        Session s=db.getSession();
+        Session s = db.getSession();
         s.beginTransaction();
         url.setStatus(0);
-        url.setRetryTime(url.getRetryTime()+1);
+        url.setRetryTime(url.getRetryTime() + 1);
         s.save(url);
         s.getTransaction().commit();
         s.close();
     }
 
-    public void stopFetchNewUrl(){
+    public void stopFetchNewUrl() {
         fethNewUrl.set(false);
     }
 

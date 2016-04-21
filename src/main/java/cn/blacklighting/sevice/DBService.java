@@ -1,5 +1,6 @@
 package cn.blacklighting.sevice;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -13,7 +14,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
  */
 public class DBService {
 
-    private static org.apache.log4j.Logger logger= Logger.getLogger(DBService.class);
+    private static Logger logger= LogManager.getRootLogger();
 
     private final SessionFactory ourSessionFactory;
     private static DBService service ;

@@ -1,13 +1,19 @@
 package cn.blacklighting.entity;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Calendar;
 
 /**
  * Created by Yajun Liu on 2016/4/4 0004.
  */
 @Entity
 @Table(name = "url", schema = "spider")
+@DynamicInsert
+@DynamicUpdate
 public class UrlEntity {
     /**
      * URL状态：新获取
@@ -39,6 +45,11 @@ public class UrlEntity {
      */
     public static final int STATUS_NO_CONTENT=5;
 
+    /**
+     * URL状态：页面被标记为noindex
+     */
+    public static final int STATUS_NO_INDEX=6;
+
     private int id;
     private String url;
     private Integer status;
@@ -55,31 +66,7 @@ public class UrlEntity {
     private int toLinkAmount;
     private int pageRank;
     private Timestamp createTime;
-
-    public UrlEntity() {
-    }
-
-    public UrlEntity(int id, String url, Integer status, Byte needHandJs, Integer pageId,
-                     Integer weight, Integer retryTime, Integer deepth, String domain,
-                     Byte isSeed, Integer maxDeepth, String md5, int outLinkAmount,
-                     int toLinkAmount, int pageRank, Timestamp createTime) {
-        this.id = id;
-        this.url = url;
-        this.status = status;
-        this.needHandJs = needHandJs;
-        this.pageId = pageId;
-        this.weight = weight;
-        this.retryTime = retryTime;
-        this.deepth = deepth;
-        this.domain = domain;
-        this.isSeed = isSeed;
-        this.maxDeepth = maxDeepth;
-        this.md5 = md5;
-        this.outLinkAmount = outLinkAmount;
-        this.toLinkAmount = toLinkAmount;
-        this.pageRank = pageRank;
-        this.createTime = createTime;
-    }
+    private Timestamp updateTime;
 
     @Id
     @Column(name = "id", nullable = false)
@@ -191,43 +178,6 @@ public class UrlEntity {
         this.maxDeepth = maxDeepth;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        UrlEntity urlEntity = (UrlEntity) o;
-
-        if (id != urlEntity.id) return false;
-        if (url != null ? !url.equals(urlEntity.url) : urlEntity.url != null) return false;
-        if (status != null ? !status.equals(urlEntity.status) : urlEntity.status != null) return false;
-        if (needHandJs != null ? !needHandJs.equals(urlEntity.needHandJs) : urlEntity.needHandJs != null) return false;
-        if (pageId != null ? !pageId.equals(urlEntity.pageId) : urlEntity.pageId != null) return false;
-        if (weight != null ? !weight.equals(urlEntity.weight) : urlEntity.weight != null) return false;
-        if (retryTime != null ? !retryTime.equals(urlEntity.retryTime) : urlEntity.retryTime != null) return false;
-        if (deepth != null ? !deepth.equals(urlEntity.deepth) : urlEntity.deepth != null) return false;
-        if (domain != null ? !domain.equals(urlEntity.domain) : urlEntity.domain != null) return false;
-        if (isSeed != null ? !isSeed.equals(urlEntity.isSeed) : urlEntity.isSeed != null) return false;
-        if (maxDeepth != null ? !maxDeepth.equals(urlEntity.maxDeepth) : urlEntity.maxDeepth != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + (url != null ? url.hashCode() : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + (needHandJs != null ? needHandJs.hashCode() : 0);
-        result = 31 * result + (pageId != null ? pageId.hashCode() : 0);
-        result = 31 * result + (weight != null ? weight.hashCode() : 0);
-        result = 31 * result + (retryTime != null ? retryTime.hashCode() : 0);
-        result = 31 * result + (deepth != null ? deepth.hashCode() : 0);
-        result = 31 * result + (domain != null ? domain.hashCode() : 0);
-        result = 31 * result + (isSeed != null ? isSeed.hashCode() : 0);
-        result = 31 * result + (maxDeepth != null ? maxDeepth.hashCode() : 0);
-        return result;
-    }
 
     @Basic
     @Column(name = "md5", nullable = true, length = 64)
@@ -260,7 +210,7 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "page_rank", nullable = false)
+    @Column(name = "page_rank")
     public int getPageRank() {
         return pageRank;
     }
@@ -270,12 +220,79 @@ public class UrlEntity {
     }
 
     @Basic
-    @Column(name = "create_time", nullable = false)
+    @Column(name = "create_time",columnDefinition = "timestamp default current_timestamp" )
     public Timestamp getCreateTime() {
         return createTime;
     }
 
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
+    }
+
+    @Basic
+    @Column(name ="update_time",columnDefinition = "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    public Timestamp getUpdateTime(){return updateTime;}
+
+    public void setUpdateTime(Timestamp updateTime){
+        this.updateTime=updateTime;
+    }
+
+    @PrePersist
+    protected void onCreate(){
+        this.createTime=new Timestamp(Calendar.getInstance().getTime().getTime());
+    }
+
+    @PreUpdate
+    protected void onUpdate(){
+        this.updateTime=new Timestamp(Calendar.getInstance().getTime().getTime());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UrlEntity urlEntity = (UrlEntity) o;
+
+        if (id != urlEntity.id) return false;
+        if (outLinkAmount != urlEntity.outLinkAmount) return false;
+        if (toLinkAmount != urlEntity.toLinkAmount) return false;
+        if (pageRank != urlEntity.pageRank) return false;
+        if (url != null ? !url.equals(urlEntity.url) : urlEntity.url != null) return false;
+        if (status != null ? !status.equals(urlEntity.status) : urlEntity.status != null) return false;
+        if (needHandJs != null ? !needHandJs.equals(urlEntity.needHandJs) : urlEntity.needHandJs != null) return false;
+        if (pageId != null ? !pageId.equals(urlEntity.pageId) : urlEntity.pageId != null) return false;
+        if (weight != null ? !weight.equals(urlEntity.weight) : urlEntity.weight != null) return false;
+        if (retryTime != null ? !retryTime.equals(urlEntity.retryTime) : urlEntity.retryTime != null) return false;
+        if (deepth != null ? !deepth.equals(urlEntity.deepth) : urlEntity.deepth != null) return false;
+        if (domain != null ? !domain.equals(urlEntity.domain) : urlEntity.domain != null) return false;
+        if (isSeed != null ? !isSeed.equals(urlEntity.isSeed) : urlEntity.isSeed != null) return false;
+        if (maxDeepth != null ? !maxDeepth.equals(urlEntity.maxDeepth) : urlEntity.maxDeepth != null) return false;
+        if (md5 != null ? !md5.equals(urlEntity.md5) : urlEntity.md5 != null) return false;
+        if (createTime != null ? !createTime.equals(urlEntity.createTime) : urlEntity.createTime != null) return false;
+        return updateTime != null ? updateTime.equals(urlEntity.updateTime) : urlEntity.updateTime == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (url != null ? url.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (needHandJs != null ? needHandJs.hashCode() : 0);
+        result = 31 * result + (pageId != null ? pageId.hashCode() : 0);
+        result = 31 * result + (weight != null ? weight.hashCode() : 0);
+        result = 31 * result + (retryTime != null ? retryTime.hashCode() : 0);
+        result = 31 * result + (deepth != null ? deepth.hashCode() : 0);
+        result = 31 * result + (domain != null ? domain.hashCode() : 0);
+        result = 31 * result + (isSeed != null ? isSeed.hashCode() : 0);
+        result = 31 * result + (maxDeepth != null ? maxDeepth.hashCode() : 0);
+        result = 31 * result + (md5 != null ? md5.hashCode() : 0);
+        result = 31 * result + outLinkAmount;
+        result = 31 * result + toLinkAmount;
+        result = 31 * result + pageRank;
+        result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
+        result = 31 * result + (updateTime != null ? updateTime.hashCode() : 0);
+        return result;
     }
 }

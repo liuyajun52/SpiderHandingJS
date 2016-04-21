@@ -7,8 +7,10 @@ import cn.blacklighting.dao.PageDao;
 import cn.blacklighting.dao.UrlDao;
 import cn.blacklighting.entity.PageEntity;
 import cn.blacklighting.entity.UrlEntity;
+import cn.blacklighting.util.CrawlerUtil;
 import com.sun.deploy.net.URLEncoder;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
@@ -16,8 +18,7 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.AbstractMap;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -25,9 +26,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class HtmlToFileWriterService implements HtmlWriter {
 
-    private static org.apache.log4j.Logger logger = Logger.getLogger(HtmlToFileWriterService.class);
+    private static Logger logger= LogManager.getRootLogger();
     public static final String DEFAULT_DIR_URL_ENCODE="UTF-8";
     private static final String dataDir = "D:\\crawler";
+    private ExecutorService writerPool;
+    public static int WRITE_POOL_SIZE=5;
     private BlockingQueue<AbstractMap.SimpleEntry<UrlEntity, byte[]>> htmlQueue = null;
     private File dataRootDir;
     private AtomicBoolean shutDown;
@@ -45,7 +48,10 @@ public class HtmlToFileWriterService implements HtmlWriter {
         if (!dataRootDir.exists()) {
             dataRootDir.mkdir();
         }
-        new WriteThread().start();
+        writerPool = Executors.newFixedThreadPool(WRITE_POOL_SIZE);
+        for (int i = 0; i < WRITE_POOL_SIZE; i++) {
+            writerPool.execute(new WriteThread());
+        }
     }
 
     public void writeHtml(UrlEntity url, byte[] html) {
@@ -58,22 +64,22 @@ public class HtmlToFileWriterService implements HtmlWriter {
     }
 
     public void shutDown(){
-        shutDown.set(false);
+        shutDown.set(true);
     }
 
-    class WriteThread extends Thread {
+    class WriteThread implements Runnable {
         @Override
         public void run() {
-            super.run();
-            while (shutDown.get()) {
+            while (!shutDown.get()||!htmlQueue.isEmpty()) {
                 try {
+
                     AbstractMap.SimpleEntry en = htmlQueue.take();
                     UrlEntity url = (UrlEntity) en.getKey();
                     byte[] html = (byte[]) en.getValue();
                     String domain = url.getDomain();
                     String u = url.getUrl();
                     Path path = Paths.get(dataDir, URLEncoder.encode(domain, DEFAULT_DIR_URL_ENCODE)
-                            ,URLEncoder.encode(u, DEFAULT_DIR_URL_ENCODE));
+                            , CrawlerUtil.md5(u));
                     File out = path.toFile();
                     FileUtils.writeByteArrayToFile(out,html);
 
@@ -86,6 +92,8 @@ public class HtmlToFileWriterService implements HtmlWriter {
                     page.setPagePath(path.toString());
                     page.setUrlId(url.getId());
                     pageDao.add(page);
+
+                    logger.info("HTML WRITE TO "+path.toString());
 
                 } catch (Exception e) {
                     e.printStackTrace();

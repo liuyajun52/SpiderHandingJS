@@ -1,13 +1,19 @@
 package cn.blacklighting.entity;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Calendar;
 
 /**
  * Created by zybang on 2016/4/19.
  */
 @Entity
 @Table(name = "domain", schema = "spider")
+@DynamicInsert
+@DynamicUpdate
 public class DomainEntity {
     private int id;
     private String domain;
@@ -57,7 +63,7 @@ public class DomainEntity {
     }
 
     @Basic
-    @Column(name = "create_time", nullable = false)
+    @Column(name = "create_time",columnDefinition = "timestamp default current_timestamp" )
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -67,13 +73,11 @@ public class DomainEntity {
     }
 
     @Basic
-    @Column(name = "update_time", nullable = false)
-    public Timestamp getUpdateTime() {
-        return updateTime;
-    }
+    @Column(name ="update_time",columnDefinition = "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    public Timestamp getUpdateTime(){return updateTime;}
 
-    public void setUpdateTime(Timestamp updateTime) {
-        this.updateTime = updateTime;
+    public void setUpdateTime(Timestamp updateTime){
+        this.updateTime=updateTime;
     }
 
     @Override
@@ -102,5 +106,15 @@ public class DomainEntity {
         result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
         result = 31 * result + (updateTime != null ? updateTime.hashCode() : 0);
         return result;
+    }
+
+    @PrePersist
+    protected void onCreate(){
+        this.createTime=new Timestamp(Calendar.getInstance().getTime().getTime());
+    }
+
+    @PreUpdate
+    protected void onUpdate(){
+        this.updateTime=new Timestamp(Calendar.getInstance().getTime().getTime());
     }
 }
