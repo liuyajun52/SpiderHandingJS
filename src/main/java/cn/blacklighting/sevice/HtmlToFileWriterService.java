@@ -16,6 +16,8 @@ import org.apache.log4j.Logger;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.AbstractMap;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * @author Yajun Liu
  */
-public class HtmlToFileWriterService implements HtmlWriter {
+public class HtmlToFileWriterService extends UnicastRemoteObject implements HtmlWriter {
 
     private static Logger logger= LogManager.getRootLogger();
     public static final String DEFAULT_DIR_URL_ENCODE="UTF-8";
@@ -38,7 +40,7 @@ public class HtmlToFileWriterService implements HtmlWriter {
     private PageDao pageDao;
 
 
-    public HtmlToFileWriterService() {
+    public HtmlToFileWriterService() throws RemoteException{
         htmlQueue = new LinkedBlockingQueue<>();
         dataRootDir = new File(dataDir);
         shutDown = new AtomicBoolean(false);
@@ -53,7 +55,7 @@ public class HtmlToFileWriterService implements HtmlWriter {
         }
     }
 
-    public void writeHtml(UrlEntity url, byte[] html) {
+    public void writeHtml(UrlEntity url, byte[] html) throws RemoteException{
         try {
             htmlQueue.put(new AbstractMap.SimpleEntry<>(url, html));
         } catch (InterruptedException e) {
@@ -62,7 +64,7 @@ public class HtmlToFileWriterService implements HtmlWriter {
         }
     }
 
-    public void shutDown(){
+    public void shutDown() throws RemoteException {
         shutDown.set(true);
     }
 

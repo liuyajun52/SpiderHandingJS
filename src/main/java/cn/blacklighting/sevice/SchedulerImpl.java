@@ -8,6 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class SchedulerImpl extends UnicastRemoteObject implements Scheduler {
 
+
     public SchedulerImpl() throws RemoteException {
     }
 
