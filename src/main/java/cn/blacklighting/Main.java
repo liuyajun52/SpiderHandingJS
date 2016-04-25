@@ -6,6 +6,7 @@ package cn.blacklighting;
 import cn.blacklighting.dao.UrlDao;
 import cn.blacklighting.models.UrlEntity;
 import cn.blacklighting.sevice.*;
+import cn.blacklighting.sevice.proxy.HtmlWriterProxy;
 import cn.blacklighting.util.CrawlerUtil;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -13,6 +14,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.*;
+import java.rmi.NotBoundException;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -74,7 +76,7 @@ public class Main {
         }
     }
 
-    public static void main(final String[] args) throws IOException, ConfigurationException {
+    public static void main(final String[] args) throws IOException, ConfigurationException, NotBoundException {
 
         Properties props = new Properties();
         props.load(Main.class.getResourceAsStream("/log4j.properties"));
@@ -97,7 +99,9 @@ public class Main {
                 seedDBUsingFile(args[1]);
             }
             UrlDistributer urlDistributer=new DBUrlDistributer();
-            HtmlWriter writer=new HtmlToFileWriterService();
+//            HtmlWriter writer=new HtmlToFileWriterService();
+            HtmlWriterProxy.registerOrGetService();
+            HtmlWriter writer=HtmlWriterProxy.getWriter();
             PageCrawlingService crawler=new PageCrawlingService(urlDistributer,writer);
             crawler.start();
         } else {

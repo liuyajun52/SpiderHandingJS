@@ -4,6 +4,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
@@ -14,7 +15,7 @@ import java.util.Calendar;
 @Table(name = "domain", schema = "spider")
 @DynamicInsert
 @DynamicUpdate
-public class DomainEntity {
+public class DomainEntity implements Serializable{
     private int id;
     private String domain;
     private String md5;
