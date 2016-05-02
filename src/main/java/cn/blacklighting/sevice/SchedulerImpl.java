@@ -15,25 +15,28 @@ public class SchedulerImpl extends UnicastRemoteObject implements Scheduler {
         crawlerInfoSortedMap=new LinkedHashMap<>();
     }
 
-    @Override
-    public String registerHtmlWriter(HtmlWriterInfo info) throws RemoteException {
-        return null;
-    }
+	@Override
+	public void registerUrlDistributer() throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
 
-    @Override
-    public void registerHtmlWriter() throws RemoteException {
+	@Override
+	public void registerHtmlWriter() throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
 
-    }
+	@Override
+	public Integer registerPageCrawler(PageCrawlerInfo info) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public Integer registerPageCrawler(PageCrawlerInfo info) throws RemoteException {
-        return null;
-    }
-
-    @Override
-    public Integer pageCrawlerHeatBeat(PageCrawlerInfo info) {
-    public String registerPageCrawler(HtmlWriterInfo info) throws RemoteException {
-        return null;
-    }
+	@Override
+	public Integer pageCrawlerHeatBeat(PageCrawlerInfo info) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
