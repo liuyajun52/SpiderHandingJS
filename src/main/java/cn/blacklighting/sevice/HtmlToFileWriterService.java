@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -74,7 +75,7 @@ public class HtmlToFileWriterService extends UnicastRemoteObject implements Html
             while (!shutDown.get()||!htmlQueue.isEmpty()) {
                 try {
 
-                    AbstractMap.SimpleEntry en = htmlQueue.take();
+                    SimpleEntry<UrlEntity, byte[]> en = htmlQueue.take();
                     UrlEntity url = (UrlEntity) en.getKey();
                     byte[] html = (byte[]) en.getValue();
                     String domain = url.getDomain();

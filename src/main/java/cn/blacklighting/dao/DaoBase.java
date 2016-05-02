@@ -34,11 +34,11 @@ public class DaoBase {
         s.close();
     }
 
-    public List query(String q, Object[] params, Type[] types) {
+    public List<?> query(String q, Object[] params, Type[] types) {
         Session s=this.db.getSession();
         Query query=s.createQuery(q);
         query.setParameters(params,types);
-        List list=query.list();
+        List<?> list=query.list();
         s.close();
         return list;
     }

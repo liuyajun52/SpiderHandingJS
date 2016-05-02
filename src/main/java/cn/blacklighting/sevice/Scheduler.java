@@ -27,10 +27,10 @@ public interface Scheduler  extends Remote{
         Integer urlQueueMaxSize;
         Integer urlQUeueSize;
         Integer threadPoolSize;
-
+        Long lastHeatBeatTime;
     }
     void registerUrlDistributer() throws RemoteException;
     void registerHtmlWriter() throws RemoteException ;
-    Integer registerPageCrawler(PageCrawlerInfo info)throws RemoteException ;
-    Integer pageCrawlerHeatBeat(PageCrawlerInfo info);
+    String registerPageCrawler(PageCrawlerInfo info)throws RemoteException ;
+    String pageCrawlerHeatBeat(PageCrawlerInfo info);
 }

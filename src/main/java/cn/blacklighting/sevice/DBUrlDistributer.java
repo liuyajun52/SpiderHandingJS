@@ -65,7 +65,7 @@ public class DBUrlDistributer implements UrlDistributer {
                 Transaction transaction = s.beginTransaction();
                 try {
                     //获取新的url 保证种子URL被先抓取
-                    List urls = s.createQuery("from UrlEntity where status =0 order by weight desc")
+                    List<UrlEntity> urls = s.createQuery("from UrlEntity where status =0 order by weight desc")
                             .setMaxResults(urlQueueMaxLen - urlQueue.size()).list();
                     transaction.commit();
                     s.close();
@@ -83,7 +83,7 @@ public class DBUrlDistributer implements UrlDistributer {
                 }
                 if (seedSum == 0) {
                     try {
-                        Thread.currentThread().sleep(10 * 1000);
+						Thread.sleep(10 * 1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

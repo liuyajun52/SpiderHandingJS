@@ -1,15 +1,8 @@
 package cn.blacklighting;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
-import java.util.zip.GZIPInputStream;
-
-import javax.net.ssl.HttpsURLConnection;
-
-import org.apache.commons.io.IOUtils;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Test {

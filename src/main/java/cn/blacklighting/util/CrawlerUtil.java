@@ -1,13 +1,8 @@
 package cn.blacklighting.util;
 
-import org.hibernate.mapping.Collection;
-
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,8 +16,8 @@ public class CrawlerUtil {
     /**
      * 已知的不需要抓取的文件类型
      */
-    public static HashSet NOT_CRAWL_FILE_TYPES
-            = new HashSet(Arrays.asList(
+    public static HashSet<String> NOT_CRAWL_FILE_TYPES
+            = new HashSet<String>(Arrays.asList(
             "exe", "zip", "tar", "gz", "7z", "ppt", "pptx", "doc", "docx", "rm", "rmvb", "avi", "flv", "mp3", "mp4", "wma", "jpg",
             "png", "jpeg", "js", "css", "tpl"
     ));

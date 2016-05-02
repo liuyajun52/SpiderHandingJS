@@ -43,8 +43,9 @@ public class Main {
     static void seedDBUsingFile(String fileName) {
         UrlDao urlDao=new UrlDao();
         int seedNum = 0;
+        BufferedReader reader = null;
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            reader = new BufferedReader(new FileReader(fileName));
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] infos = line.split("\t");
@@ -72,6 +73,11 @@ public class Main {
             e.printStackTrace();
             logger.fatal("IO error while seed DB", e);
         } finally {
+        	try {
+				reader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
             logger.info("Seed DB URL sum :" + seedNum);
         }
     }
