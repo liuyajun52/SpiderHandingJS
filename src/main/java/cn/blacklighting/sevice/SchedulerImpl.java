@@ -13,17 +13,12 @@ public class SchedulerImpl extends UnicastRemoteObject implements Scheduler {
     }
 
     @Override
-    public void registerUrlDistributer() throws RemoteException {
-
+    public String registerHtmlWriter(HtmlWriterInfo info) throws RemoteException {
+        return null;
     }
 
     @Override
-    public void registerHtmlWriter() throws RemoteException {
-
-    }
-
-    @Override
-    public Integer registerPageCrawler() throws RemoteException {
+    public String registerPageCrawler(HtmlWriterInfo info) throws RemoteException {
         return null;
     }
 
