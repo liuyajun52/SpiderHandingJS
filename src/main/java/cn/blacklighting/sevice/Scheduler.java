@@ -29,6 +29,8 @@ public interface Scheduler  extends Remote{
         Integer threadPoolSize;
 
     }
-    String registerHtmlWriter(HtmlWriterInfo info) throws RemoteException ;
-    String registerPageCrawler(HtmlWriterInfo info)throws RemoteException ;
+    void registerUrlDistributer() throws RemoteException;
+    void registerHtmlWriter() throws RemoteException ;
+    Integer registerPageCrawler(PageCrawlerInfo info)throws RemoteException ;
+    Integer pageCrawlerHeatBeat(PageCrawlerInfo info);
 }

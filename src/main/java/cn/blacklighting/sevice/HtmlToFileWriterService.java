@@ -8,12 +8,12 @@ import cn.blacklighting.dao.UrlDao;
 import cn.blacklighting.models.PageEntity;
 import cn.blacklighting.models.UrlEntity;
 import cn.blacklighting.util.CrawlerUtil;
-import com.sun.deploy.net.URLEncoder;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.*;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.rmi.RemoteException;
