@@ -2,7 +2,7 @@ package cn.blacklighting.sevice.proxy;
 
 import cn.blacklighting.conf.SpiderConf;
 import cn.blacklighting.sevice.HtmlToFileWriterService;
-import cn.blacklighting.sevice.HtmlWriter;
+import cn.blacklighting.sevice.serviceinterface.HtmlWriter;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.LogManager;

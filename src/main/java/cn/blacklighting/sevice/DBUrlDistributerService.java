@@ -2,6 +2,7 @@ package cn.blacklighting.sevice;
 
 import cn.blacklighting.dao.UrlDao;
 import cn.blacklighting.models.UrlEntity;
+import cn.blacklighting.sevice.serviceinterface.UrlDistributer;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -17,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * url 分发器，使用MYSQL作为数据源
  * Created by zybang on 2016/4/1.
  */
-public class DBUrlDistributer implements UrlDistributer {
+public class DBUrlDistributerService implements UrlDistributer {
 
     private static Logger logger = LogManager.getRootLogger();
 
@@ -27,8 +28,8 @@ public class DBUrlDistributer implements UrlDistributer {
     private AtomicBoolean fethNewUrl;
     private UrlDao urlDao;
 
-    public DBUrlDistributer() {
-        logger.info("Spider url distributer is set to DBUrlDistributer");
+    public DBUrlDistributerService() {
+        logger.info("Spider url distributer is set to DBUrlDistributerService");
         db = DBService.getInstance();
         urlDao = new UrlDao();
         urlQueue = new LinkedBlockingQueue<UrlEntity>(urlQueueMaxLen);
@@ -99,9 +100,9 @@ public class DBUrlDistributer implements UrlDistributer {
         UrlEntity url = null;
 
         try {
-            logger.debug("Begin to fetch new url "+urlQueue.size());
+            logger.debug("Begin to get new url"+urlQueue.size());
             url = urlQueue.take();
-            logger.debug("New Url Fetched "+url);
+            logger.debug("New url get "+url);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

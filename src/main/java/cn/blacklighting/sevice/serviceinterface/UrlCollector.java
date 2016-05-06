@@ -1,4 +1,4 @@
-package cn.blacklighting.sevice;
+package cn.blacklighting.sevice.serviceinterface;
 
 import cn.blacklighting.models.LinkEntity;
 import cn.blacklighting.models.UrlEntity;

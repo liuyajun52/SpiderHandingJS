@@ -1,8 +1,8 @@
 package cn.blacklighting.sevice.proxy;
 
 import cn.blacklighting.conf.SpiderConf;
-import cn.blacklighting.sevice.Scheduler;
-import cn.blacklighting.sevice.SchedulerImpl;
+import cn.blacklighting.sevice.serviceinterface.Scheduler;
+import cn.blacklighting.sevice.SchedulerService;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.LogManager;
@@ -30,7 +30,7 @@ public class SchedulerProxy {
                 int port=pro.getInt("scheduler.port");
                 String name=pro.getString("scheduler.name");
                 LocateRegistry.createRegistry(port);
-                scheduler=new SchedulerImpl();
+                scheduler=new SchedulerService();
                 Naming.rebind(String.format("rmi://%s:%d/%s",host,port,name),scheduler);
                 logger.info("Run as scheduler at "+String.format("rmi://%s:%d/%s",host,port,name));
             }
@@ -39,7 +39,7 @@ public class SchedulerProxy {
         }
     }
 
-    public Scheduler getScheduler() throws RemoteException, MalformedURLException, ConfigurationException, NotBoundException {
+    public static Scheduler getScheduler() throws RemoteException, MalformedURLException, ConfigurationException, NotBoundException {
         if(scheduler==null){
             registerOrGetService();
         }

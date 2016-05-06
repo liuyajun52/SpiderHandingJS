@@ -7,6 +7,7 @@ import cn.blacklighting.dao.PageDao;
 import cn.blacklighting.dao.UrlDao;
 import cn.blacklighting.models.PageEntity;
 import cn.blacklighting.models.UrlEntity;
+import cn.blacklighting.sevice.serviceinterface.HtmlWriter;
 import cn.blacklighting.util.CrawlerUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.LogManager;

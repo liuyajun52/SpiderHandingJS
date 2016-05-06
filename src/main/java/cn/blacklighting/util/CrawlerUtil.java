@@ -1,7 +1,9 @@
 package cn.blacklighting.util;
 
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.regex.Matcher;
@@ -110,5 +112,11 @@ public class CrawlerUtil {
             System.err.print("Can not generate md5!!!");
         }
         return null;
+    }
+
+    public static String getLocalIP() throws UnknownHostException {
+        InetAddress address=InetAddress.getLocalHost();
+        String ip=address.getHostAddress();
+        return ip;
     }
 }

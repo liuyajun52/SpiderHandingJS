@@ -7,6 +7,10 @@ import cn.blacklighting.dao.UrlDao;
 import cn.blacklighting.models.UrlEntity;
 import cn.blacklighting.sevice.*;
 import cn.blacklighting.sevice.proxy.HtmlWriterProxy;
+import cn.blacklighting.sevice.proxy.SchedulerProxy;
+import cn.blacklighting.sevice.serviceinterface.HtmlWriter;
+import cn.blacklighting.sevice.serviceinterface.Scheduler;
+import cn.blacklighting.sevice.serviceinterface.UrlDistributer;
 import cn.blacklighting.util.CrawlerUtil;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -104,11 +108,19 @@ public class Main {
             if(args.length>1){
                 seedDBUsingFile(args[1]);
             }
-            UrlDistributer urlDistributer=new DBUrlDistributer();
-//            HtmlWriter writer=new HtmlToFileWriterService();
+
+            //get scheduler
+            SchedulerProxy.registerOrGetService();
+            Scheduler scheduler=SchedulerProxy.getScheduler();
+
+            //get html writer
             HtmlWriterProxy.registerOrGetService();
             HtmlWriter writer=HtmlWriterProxy.getWriter();
-            PageCrawlingService crawler=new PageCrawlingService(urlDistributer,writer);
+
+            //init url distributer
+            UrlDistributer urlDistributer=new DBUrlDistributerService();
+
+            PageCrawlerService crawler=new PageCrawlerService(scheduler,urlDistributer,writer);
             crawler.start();
         } else {
             System.out.println("Unknown commend " + args[0]);

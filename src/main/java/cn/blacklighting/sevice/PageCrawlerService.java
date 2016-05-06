@@ -5,6 +5,9 @@ import cn.blacklighting.dao.LinkDao;
 import cn.blacklighting.dao.UrlDao;
 import cn.blacklighting.models.LinkEntity;
 import cn.blacklighting.models.UrlEntity;
+import cn.blacklighting.sevice.serviceinterface.HtmlWriter;
+import cn.blacklighting.sevice.serviceinterface.Scheduler;
+import cn.blacklighting.sevice.serviceinterface.UrlDistributer;
 import cn.blacklighting.util.CrawlerUtil;
 import org.apache.any23.encoding.TikaEncodingDetector;
 import org.apache.commons.io.IOUtils;
@@ -24,22 +27,28 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 
 import java.io.InputStream;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Created by zybang on 2016/4/5.
  */
-public class PageCrawlingService {
+public class PageCrawlerService {
     private static Logger logger= LogManager.getRootLogger();
 
     public static final String DEFAULT_PAGE_ENCODE = "utf-8";
+    public static final int HEAT_BEAT_GAT=1*1000;
     public static final Pattern charsetPatt
             = Pattern.compile("<meta[^>]*charset ?= ?([a-z0-9\\-]+)[^>]*>", Pattern.CASE_INSENSITIVE);
     public static final Pattern urlPatt =
@@ -51,46 +60,59 @@ public class PageCrawlingService {
                     "*[a-z\\x{00a1}-\\x{ffff}0-9]+)(?:\\.(?:[a-z\\x{00a1}-\\x{ffff}0-9]+-?)" +
                     "*[a-z\\x{00a1}-\\x{ffff}0-9]+)*(?:\\.(?:[a-z\\x{00a1}-\\x{ffff}]{2,})))(?::\\d{2,5})?(?:/[^\\s]*)?$");
 
+    private Scheduler scheduler;
     private UrlDistributer urlDistributer;
     private HtmlWriter htmlWriter;
     private ExecutorService crawlerPool;
+    private ScheduledExecutorService heatBeatPool;
     private int threadPoolSize = 1;
     private AtomicBoolean shutDown;
     private DBService db;
     private UrlDao urlDao;
     private LinkDao linkDao;
+    private Scheduler.PageCrawlerInfo info;
+    private AtomicInteger crawlerSum=new AtomicInteger(1);
+    private AtomicInteger crawlerNum=new AtomicInteger(0);
 
-    public PageCrawlingService(UrlDistributer urlDistributer, HtmlWriter htmlWriter) {
+    public PageCrawlerService(Scheduler scheduler,UrlDistributer urlDistributer, HtmlWriter htmlWriter) throws UnknownHostException {
+        this.scheduler=scheduler;
         this.urlDistributer = urlDistributer;
         this.htmlWriter = htmlWriter;
         this.shutDown = new AtomicBoolean(false);
         this.db = DBService.getInstance();
         this.urlDao = new UrlDao();
         this.linkDao = new LinkDao();
+        this.info=new Scheduler.PageCrawlerInfo();
+        info.id=CrawlerUtil.getLocalIP();
+        info.rmiUrl=CrawlerUtil.getLocalIP();
     }
 
-    public void start() {
+    public void start() throws RemoteException {
+        parseSedulerReturnInfo(scheduler.registerPageCrawler(info));
+        heatBeatPool=Executors.newSingleThreadScheduledExecutor();
+        heatBeatPool.scheduleAtFixedRate(new HeatBeatThread(),HEAT_BEAT_GAT,HEAT_BEAT_GAT,TimeUnit.MILLISECONDS);
         crawlerPool = Executors.newFixedThreadPool(threadPoolSize);
         for (int i = 0; i < threadPoolSize; i++) {
-            crawlerPool.execute(new CrawlingThread());
+            crawlerPool.execute(new CrawlerThread());
         }
         logger.info("CrawlingService Start with " + threadPoolSize + " threads");
     }
 
     public void stop() {
         shutDown.set(true);
+        heatBeatPool.shutdown();
         crawlerPool.shutdown();
         logger.info("CrawlingService shut down");
     }
 
-    private class CrawlingThread implements Runnable {
+    private class CrawlerThread implements Runnable {
 
         HttpClient client = null;
         HttpResponse response = null;
         HtmlCleaner htmlCleaner = null;
         TikaEncodingDetector detector = null;
 
-        public CrawlingThread() {
+        public CrawlerThread() {
             client = HttpClients.createDefault();
             htmlCleaner = new HtmlCleaner();
             detector = new TikaEncodingDetector();
@@ -209,6 +231,28 @@ public class PageCrawlingService {
             }
         }
 
+    }
+
+    class HeatBeatThread implements Runnable{
+
+        @Override
+        public void run() {
+            try {
+                String re=scheduler.pageCrawlerHeatBeat(info);
+                logger.debug("Heat Beat :"+re);
+                parseSedulerReturnInfo(re);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void parseSedulerReturnInfo(String re){
+        String[] infos=re.split(":");
+        if(infos.length==2){
+            crawlerSum.set(Integer.parseInt(infos[0]));
+            crawlerNum.set(Integer.parseInt(infos[1]));
+        }
     }
 
     private HttpGet setHttpRequestHeader(
