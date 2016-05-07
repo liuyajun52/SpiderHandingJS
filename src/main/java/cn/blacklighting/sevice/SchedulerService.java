@@ -40,8 +40,8 @@ public class SchedulerService extends UnicastRemoteObject implements Scheduler {
 	@Override
 	public String registerPageCrawler(PageCrawlerInfo info) throws RemoteException {
 		info.lastHeatBeatTime=Calendar.getInstance().getTimeInMillis();
-        info.crawlerNumber=crawlerInfoSortedMap.size()-1;
 		Collections.synchronizedMap(crawlerInfoSortedMap).put(info.rmiUrl, info);
+        info.crawlerNumber=crawlerInfoSortedMap.size()-1;
 		logger.info("PageCrawler Registed :"+info.rmiUrl + " CrawlerMap size :"+crawlerInfoSortedMap.size());
 		return String.format("%d:%d", crawlerInfoSortedMap.size(),crawlerInfoSortedMap.size()-1);
 	}
@@ -51,6 +51,7 @@ public class SchedulerService extends UnicastRemoteObject implements Scheduler {
         info.lastHeatBeatTime=Calendar.getInstance().getTimeInMillis();
         Map<String,PageCrawlerInfo> m=Collections.synchronizedMap(crawlerInfoSortedMap);
         if(m.containsKey(info.rmiUrl)){
+            info.crawlerNumber=m.get(info.rmiUrl).crawlerNumber;
             m.put(info.rmiUrl,info);
             logger.info("PageCrawler HeatBeat :"+info.rmiUrl + " CrawlerMap size :"+crawlerInfoSortedMap.size());
             return String.format("%d:%d",crawlerInfoSortedMap.size(),info.crawlerNumber);

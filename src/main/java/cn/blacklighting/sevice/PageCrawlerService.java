@@ -20,6 +20,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.type.StringType;
 import org.hibernate.type.Type;
@@ -35,7 +36,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -65,7 +65,7 @@ public class PageCrawlerService {
     private HtmlWriter htmlWriter;
     private ExecutorService crawlerPool;
     private ScheduledExecutorService heatBeatPool;
-    private int threadPoolSize = 1;
+    private int threadPoolSize = 50;
     private AtomicBoolean shutDown;
     private DBService db;
     private UrlDao urlDao;
@@ -90,7 +90,8 @@ public class PageCrawlerService {
     public void start() throws RemoteException {
         parseSedulerReturnInfo(scheduler.registerPageCrawler(info));
         heatBeatPool=Executors.newSingleThreadScheduledExecutor();
-        heatBeatPool.scheduleAtFixedRate(new HeatBeatThread(),HEAT_BEAT_GAT,HEAT_BEAT_GAT,TimeUnit.MILLISECONDS);
+//        heatBeatPool.scheduleAtFixedRate(new HeatBeatThread(),HEAT_BEAT_GAT,HEAT_BEAT_GAT,TimeUnit.MILLISECONDS);
+        new Thread(new HeatBeatThread()).start();
         crawlerPool = Executors.newFixedThreadPool(threadPoolSize);
         for (int i = 0; i < threadPoolSize; i++) {
             crawlerPool.execute(new CrawlerThread());
@@ -183,23 +184,31 @@ public class PageCrawlerService {
                                 String md5 = CrawlerUtil.md5(href.toLowerCase());
                                 Session s=db.getSession();
                                 s.beginTransaction();
-                                UrlEntity result = (UrlEntity) urlDao.queryUnique("from UrlEntity where md5 = ?",
-                                        Arrays.asList(md5).toArray()
-                                        , (Type[]) Arrays.asList(new StringType()).toArray());
+                                Query query= s.createSQLQuery("INSERT INTO url (url,md5,status,domain,is_seed," +
+                                        "to_link_amount) VALUE (:url,:md5,:stat,:domain,:is_seed,:to_link_amount) " +
+                                        "ON DUPLICATE KEY UPDATE to_link_amount=to_link_amount+1");
+                                query.setParameter("url",href);
+                                query.setParameter("md5",md5);
+                                query.setParameter("domain",CrawlerUtil.getDomainName((href)));
+                                query.setParameter("stat",UrlEntity.STATUS_NEW);
+                                query.setParameter("is_seed",0);
+                                query.setParameter("to_link_amount",1);
+                                query.executeUpdate();
+//                                UrlEntity result = (UrlEntity) query.uniqueResult();
 
-                                if (result != null) {
-                                    result.setToLinkAmount(result.getToLinkAmount() + 1);
-                                    s.merge(result);
-                                } else {
-                                    result = new UrlEntity();
-                                    result.setUrl(href);
-                                    result.setToLinkAmount(1);
-                                    result.setStatus(0);
-                                    result.setDomain(CrawlerUtil.getDomainName((href)));
-                                    result.setIsSeed((byte) 1);
-                                    result.setMd5(md5);
-                                    s.save(result);
-                                }
+//                                if (result != null) {
+//                                    result.setToLinkAmount(result.getToLinkAmount() + 1);
+//                                    s.merge(result);
+//                                } else {
+//                                    result = new UrlEntity();
+//                                    result.setUrl(href);
+//                                    result.setToLinkAmount(1);
+//                                    result.setStatus(0);
+//                                    result.setDomain(CrawlerUtil.getDomainName((href)));
+//                                    result.setIsSeed((byte) 1);
+//                                    result.setMd5(md5);
+//                                    s.save(result);
+//                                }
                                 s.getTransaction().commit();
                                 s.close();
 
@@ -237,12 +246,17 @@ public class PageCrawlerService {
 
         @Override
         public void run() {
-            try {
-                String re=scheduler.pageCrawlerHeatBeat(info);
-                logger.debug("Heat Beat :"+re);
-                parseSedulerReturnInfo(re);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+            while(true){
+                try {
+                    String re=scheduler.pageCrawlerHeatBeat(info);
+                    logger.debug("Heat Beat :"+re);
+                    parseSedulerReturnInfo(re);
+                    Thread.sleep(HEAT_BEAT_GAT);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

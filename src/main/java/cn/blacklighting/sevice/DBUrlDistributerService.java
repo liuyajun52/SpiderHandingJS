@@ -54,14 +54,14 @@ public class DBUrlDistributerService implements UrlDistributer {
                     while (urlQueue.size() > urlQueueMaxLen / 2) {
                         try {
 //                            logger.debug("URLQUEUE SIZE IS LARGER THEN 5000");
-                            urlQueue.wait(10);
+                            urlQueue.wait(10000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
-                            logger.fatal("Error on fetch new url waiting urlQueue", e);
+                            logger.fatal("Error on fetch new urls waiting urlQueue", e);
                         }
                     }
                 }
-                logger.info("Begin to fetch new seed "+urlQueue.size());
+                logger.info("Begin to fetch new urls "+urlQueue.size());
                 Session s = db.getSession();
                 Transaction transaction = s.beginTransaction();
                 try {
@@ -75,11 +75,11 @@ public class DBUrlDistributerService implements UrlDistributer {
                         urlDao.updateUrlStatus(sn,UrlEntity.STATUS_IN_QUEUE);
                         seedSum++;
                     }
-                    logger.info("New seeds fetched : " + seedSum);
+                    logger.info("New urls fetched : " + seedSum);
 
                 } catch (Exception e) {
                     //只是将URL队列时候发生了异常，不必回滚
-                    logger.fatal("Error on fetch new seeds or url", e);
+                    logger.fatal("Error on fetch new url", e);
                     e.printStackTrace();
                 }
                 if (seedSum == 0) {

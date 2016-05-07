@@ -2,6 +2,7 @@ package cn.blacklighting.models;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SQLInsert;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,6 +16,10 @@ import java.util.Calendar;
 @Table(name = "url", schema = "spider")
 @DynamicInsert
 @DynamicUpdate
+//@SQLInsert(sql="INSERT INTO `url`(`id`, `url`, `status`, `need_hand_JS`, `page_id`, `weight`, `retry_time`, `deepth`, " +
+//        "`domain`, `out_link_amount`, `to_link_amount`, `page_rank`, `is_seed`, `max_deepth`, `md5`) " +
+//        "VALUES (?,?,?,?,?,?,?,?,?," +
+//        "?,?,?,?,?,?) ON DUPLICATE KEY UPDATE set to_link_amount=to_link_amount+1")
 public class UrlEntity implements Serializable {
     /**
      * URL状态：新获取
