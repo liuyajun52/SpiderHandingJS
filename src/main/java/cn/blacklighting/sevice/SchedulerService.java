@@ -26,13 +26,7 @@ public class SchedulerService extends UnicastRemoteObject implements Scheduler {
     }
 
 	@Override
-	public String registerUrlDistributer() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String registerHtmlWriter() throws RemoteException {
+	public String registerHtmlWriter(HtmlWriterInfo info) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}

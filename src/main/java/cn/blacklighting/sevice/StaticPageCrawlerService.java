@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 /**
  * Created by zybang on 2016/4/5.
  */
-public class PageCrawlerService {
+public class StaticPageCrawlerService {
     private static Logger logger= LogManager.getRootLogger();
 
     public static final String DEFAULT_PAGE_ENCODE = "utf-8";
@@ -74,7 +74,7 @@ public class PageCrawlerService {
     private AtomicInteger crawlerSum=new AtomicInteger(1);
     private AtomicInteger crawlerNum=new AtomicInteger(0);
 
-    public PageCrawlerService(Scheduler scheduler,UrlDistributer urlDistributer, HtmlWriter htmlWriter) throws UnknownHostException {
+    public StaticPageCrawlerService(Scheduler scheduler, UrlDistributer urlDistributer, HtmlWriter htmlWriter) throws UnknownHostException {
         this.scheduler=scheduler;
         this.urlDistributer = urlDistributer;
         this.htmlWriter = htmlWriter;
