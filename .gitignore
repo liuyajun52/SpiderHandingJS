@@ -1,5 +1,6 @@
 target
 .idea
-jspagecrawler/node_modules
+node_modules
 lib
 *log
+.iml

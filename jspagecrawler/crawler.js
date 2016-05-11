@@ -81,7 +81,7 @@ function getHTMLFromPhantom(url, res) {
             return sitepage.property('content');
         })
         .then(function (content) {
-            console.log(sitepage.property('Content-Type'));
+            // console.log(sitepage.property('Content-Type'));
             sitepage.close();
             res.writeHead(200);
             res.end(content);

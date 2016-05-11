@@ -120,7 +120,7 @@ public class Main {
             //init url distributer
             UrlDistributer urlDistributer=new DBUrlDistributerService();
 
-            StaticPageCrawlerService crawler=new StaticPageCrawlerService(scheduler,urlDistributer,writer);
+            PageCrawlerService crawler=new PageCrawlerService(scheduler,urlDistributer,writer);
             crawler.start();
         } else {
             System.out.println("Unknown commend " + args[0]);
